@@ -1,6 +1,6 @@
 import enum
 
-class TokenType(enum.Enum):
+class TokenTag(enum.Enum):
     # Build-in types
     INT = 0
     FLOAT = 1
@@ -24,7 +24,7 @@ class TokenType(enum.Enum):
     SCAN = 15
     PRINT = 16
     ASSERT = 17
-    EXEC = 18 # This function executes an external command from shell
+    EXIT = 18
     
     # Single character tokens
     LPAREN = 19
@@ -59,15 +59,15 @@ class TokenType(enum.Enum):
     MINUS_EQ = 44 # -=
     TRUE = 45
     FALSE = 46
-    STRING_CONST = 47
+    STR_LITERAL = 47
     UNK = 48
     EOF = 49
 
 class Token(object):
-    def __init__(self, type, value, lineno):
-        self.type = type
+    def __init__(self, tag, value, lineno):
+        self.tag = tag
         self.value = value
         self.lineno = lineno
     
     def __str__(self):
-        return "Token(type={}, value=\"{}\", lineno={})".format(self.type, self.value, self.lineno)
+        return "Token(tag={}, value=\"{}\", lineno={})".format(self.tag, self.value, self.lineno)

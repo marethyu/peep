@@ -1,4 +1,4 @@
-from token import TokenType, Token
+from token import TokenTag, Token
 
 class Lexer(object):
     def __init__(self, prgm):
@@ -7,13 +7,13 @@ class Lexer(object):
         self.lineno = 1
         self.idx = 0
         self.current = prgm[self.idx]
-        self.prev_type = None # for detection of unary operators
+        self.prev_tag = None # for detection of unary operators
         self.dct = {}
         self._init_dict()
     
     def next_token(self):
         if self.current is None:
-            return Token(TokenType.EOF, None, self.lineno)
+            return Token(TokenTag.EOF, None, self.lineno)
         
         if self.current.isspace():
             self._eat_whitespace()
@@ -33,40 +33,40 @@ class Lexer(object):
             return self._make_word_tok()
         
         if self.current == '(':
-            return self._make_token(TokenType.LPAREN, '(')
+            return self._make_token(TokenTag.LPAREN, '(')
         
         if self.current == ')':
-            return self._make_token(TokenType.RPAREN, ')')
+            return self._make_token(TokenTag.RPAREN, ')')
         
         if self.current == '[':
-            return self._make_token(TokenType.LSQ_BRCKT, '[')
+            return self._make_token(TokenTag.LSQ_BRCKT, '[')
         
         if self.current == ']':
-            return self._make_token(TokenType.RSQ_BRCKT, ']')
+            return self._make_token(TokenTag.RSQ_BRCKT, ']')
         
         if self.current == '{':
-            return self._make_token(TokenType.LCURLY_BRACE, '{')
+            return self._make_token(TokenTag.LCURLY_BRACE, '{')
         
         if self.current == '}':
-            return self._make_token(TokenType.RCURLY_BRACE, '}')
+            return self._make_token(TokenTag.RCURLY_BRACE, '}')
         
         if self.current == ';':
-            return self._make_token(TokenType.SEMICOLON, ';')
+            return self._make_token(TokenTag.SEMICOLON, ';')
         
         if self.current == ',':
-            return self._make_token(TokenType.COMMA, ',')
+            return self._make_token(TokenTag.COMMA, ',')
         
         if self.current == '.':
-            return self._make_token(TokenType.DOT, '.')
+            return self._make_token(TokenTag.DOT, '.')
         
         if self.current == '=':
             self._next_ch()
             
             if self.current is not None and self.current == '=':
-                return self._make_token(TokenType.EQUAL, '==')
+                return self._make_token(TokenTag.EQUAL, '==')
             
-            self.prev_type = TokenType.ASSIGN
-            return Token(TokenType.ASSIGN, '=', self.lineno)
+            self.prev_tag = TokenTag.ASSIGN
+            return Token(TokenTag.ASSIGN, '=', self.lineno)
         
         if self.current in ['+', '-', '*', '/', '%']:
             op = self.current
@@ -75,56 +75,56 @@ class Lexer(object):
             if (peek is not None and
                 op in ['+', '-'] and
                 (peek == '(' or peek.isalnum()) and
-                self.prev_type in [None, TokenType.ASSIGN, TokenType.BIN_OP, TokenType.LPAREN, TokenType.COMMA, TokenType.EQUAL, TokenType.NOT_EQU, TokenType.LESS, TokenType.GREATER, TokenType.LESS_EQ, TokenType.GREATER_EQ]):
-                return self._make_token(TokenType.UNARY_OP, op)
+                self.prev_tag in [None, TokenTag.ASSIGN, TokenTag.BIN_OP, TokenTag.LPAREN, TokenTag.COMMA, TokenTag.EQUAL, TokenTag.NOT_EQU, TokenTag.LESS, TokenTag.GREATER, TokenTag.LESS_EQ, TokenTag.GREATER_EQ]):
+                return self._make_token(TokenTag.UNARY_OP, op)
             
             if (peek is not None and
                 op in ['+', '-'] and
                 peek == '='):
-                return self._make_token(TokenType.PLUS_EQ if op is '+' else TokenType.MINUS_EQ, op + '=')
+                return self._make_token(TokenTag.PLUS_EQ if op is '+' else TokenTag.MINUS_EQ, op + '=')
             
-            return self._make_token(TokenType.BIN_OP, op)
+            return self._make_token(TokenTag.BIN_OP, op)
         
         if self.current == '!':
             self._next_ch()
             
             if self.current is not None and self.current == '=':
-                return self._make_token(TokenType.NOT_EQU, '!=')
+                return self._make_token(TokenTag.NOT_EQU, '!=')
             
-            self.prev_type = TokenType.NOT
-            return Token(TokenType.NOT, '!', self.lineno)
+            self.prev_tag = TokenTag.NOT
+            return Token(TokenTag.NOT, '!', self.lineno)
         
         if self.current == '&':
             peek = self._peek()
             
             if peek is not None and peek == '&':
                 self._next_ch() # eat '&'
-                return self._make_token(TokenType.AND, '&&')
+                return self._make_token(TokenTag.AND, '&&')
         
         if self.current == '|':
             peek = self._peek()
             
             if peek is not None and peek == '|':
                 self._next_ch() # eat '|'
-                return self._make_token(TokenType.OR, '||')
+                return self._make_token(TokenTag.OR, '||')
         
         if self.current == '<':
             self._next_ch()
             
             if self.current is not None and self.current == '=':
-                return self._make_token(TokenType.LESS_EQ, '<=')
+                return self._make_token(TokenTag.LESS_EQ, '<=')
             
-            self.prev_type = TokenType.LESS
-            return Token(TokenType.LESS, '<', self.lineno)
+            self.prev_tag = TokenTag.LESS
+            return Token(TokenTag.LESS, '<', self.lineno)
         
         if self.current == '>':
             self._next_ch()
             
             if self.current is not None and self.current == '=':
-                return self._make_token(TokenType.GREATER_EQ, '>=')
+                return self._make_token(TokenTag.GREATER_EQ, '>=')
             
-            self.prev_type = TokenType.GREATER
-            return Token(TokenType.GREATER, '>', self.lineno)
+            self.prev_tag = TokenTag.GREATER
+            return Token(TokenTag.GREATER, '>', self.lineno)
         
         if self.current == '"':
             str = ""
@@ -136,14 +136,14 @@ class Lexer(object):
                 str += self.current
                 self._next_ch()
             
-            return self._make_token(TokenType.STRING_CONST, str)
+            return self._make_token(TokenTag.STR_LITERAL, str)
         
-        return self._make_token(TokenType.UNK, self.current)
+        return self._make_token(TokenTag.UNK, self.current)
     
-    def _make_token(self, type, value):
+    def _make_token(self, tag, value):
         self._next_ch()
-        self.prev_type = type
-        return Token(type, value, self.lineno)
+        self.prev_tag = tag
+        return Token(tag, value, self.lineno)
     
     def _make_word_tok(self):
         word = ""
@@ -152,14 +152,14 @@ class Lexer(object):
             word += self.current
             self._next_ch()
         
-        type = self.dct.get(word)
+        tag = self.dct.get(word)
         
-        if type is not None:
-            self.prev_type = type
-            return Token(type, word, self.lineno)
+        if tag is not None:
+            self.prev_tag = tag
+            return Token(tag, word, self.lineno)
         
-        self.prev_type = TokenType.IDENT
-        return Token(TokenType.IDENT, word, self.lineno)
+        self.prev_tag = TokenTag.IDENT
+        return Token(TokenTag.IDENT, word, self.lineno)
     
     def _make_num_tok(self):
         num = ""
@@ -176,11 +176,11 @@ class Lexer(object):
                 num += self.current
                 self._next_ch()
             
-            self.prev_type = TokenType.FLT_CONST
-            return Token(TokenType.FLT_CONST, num, self.lineno)
+            self.prev_tag = TokenTag.FLT_CONST
+            return Token(TokenTag.FLT_CONST, num, self.lineno)
         
-        self.prev_type = TokenType.INT_CONST
-        return Token(TokenType.INT_CONST, num, self.lineno)
+        self.prev_tag = TokenTag.INT_CONST
+        return Token(TokenTag.INT_CONST, num, self.lineno)
     
     def _eat_comment(self):
         # consume "//"
@@ -207,24 +207,24 @@ class Lexer(object):
         self.current = None if self.idx >= self.prgm_len else self.prgm[self.idx]
     
     def _init_dict(self):
-        self.dct['int'] = TokenType.INT
-        self.dct['float'] = TokenType.FLOAT
-        self.dct['bool'] = TokenType.BOOL
-        self.dct['string'] = TokenType.STRING
-        self.dct['void'] = TokenType.VOID
-        self.dct['if'] = TokenType.IF
-        self.dct['else'] = TokenType.ELSE
-        self.dct['while'] = TokenType.WHILE
-        self.dct['for'] = TokenType.FOR
-        self.dct['do'] = TokenType.DO
-        self.dct['break'] = TokenType.BREAK
-        self.dct['continue'] = TokenType.CONTINUE
-        self.dct['return'] = TokenType.RETURN
-        self.dct['use'] = TokenType.USE
-        self.dct['object'] = TokenType.OBJECT
-        self.dct['scan'] = TokenType.SCAN
-        self.dct['print'] = TokenType.PRINT
-        self.dct['assert'] = TokenType.ASSERT
-        self.dct['exec'] = TokenType.EXEC
-        self.dct['true'] = TokenType.TRUE
-        self.dct['false'] = TokenType.FALSE
+        self.dct['int'] = TokenTag.INT
+        self.dct['float'] = TokenTag.FLOAT
+        self.dct['bool'] = TokenTag.BOOL
+        self.dct['string'] = TokenTag.STRING
+        self.dct['void'] = TokenTag.VOID
+        self.dct['if'] = TokenTag.IF
+        self.dct['else'] = TokenTag.ELSE
+        self.dct['while'] = TokenTag.WHILE
+        self.dct['for'] = TokenTag.FOR
+        self.dct['do'] = TokenTag.DO
+        self.dct['break'] = TokenTag.BREAK
+        self.dct['continue'] = TokenTag.CONTINUE
+        self.dct['return'] = TokenTag.RETURN
+        self.dct['use'] = TokenTag.USE
+        self.dct['object'] = TokenTag.OBJECT
+        self.dct['scan'] = TokenTag.SCAN
+        self.dct['print'] = TokenTag.PRINT
+        self.dct['assert'] = TokenTag.ASSERT
+        self.dct['exit'] = TokenTag.EXIT
+        self.dct['true'] = TokenTag.TRUE
+        self.dct['false'] = TokenTag.FALSE

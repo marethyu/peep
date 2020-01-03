@@ -1,0 +1,110 @@
+use math // don't forgot to make another .peep file with math functions!
+
+object obj {
+    int foo;
+    int bar;
+};
+
+void f1() {
+    print("Hello...");
+    print("Poophead!\n")
+    print("duh")
+}
+
+float f2(int x, int y) {
+    return (float) x + (float) y;
+}
+
+int fib(int n) {
+    if (n == 0 || n == 1) {
+        return n;
+    } else {
+        return fib(n - 1) + fib(n - 2);
+    }
+}
+
+void main() {
+    int a = 10;
+    float b = 42454.3234;
+    bool c = true;
+    string d = "dfef389r84r";
+    obj o = {20, 30};
+    
+    int uh;
+    int umm;
+    
+    print(uh);
+    
+    scan(uh);
+    scan(umm, o.bar);
+    
+    o.foo = umm;
+    
+    assert(uh != 0);
+    
+    string peepee;
+    
+    print(peepee);
+    
+    if (uh == 10) {
+        print("yeeaah");
+    }
+    
+    peepee = "123";
+    
+    if (peepee == "124") {
+        print("ho");
+    } else {
+        print("ha");
+    }
+    
+    int val = -4 * (1.2445 + -exp(3) * 9.0) / cos(0.2345) + pow(2, 3.3442) - -tan(0.1) * -pow(exp(2), -sqrt(3458935.8678) - 34.234) - (4 + 7 * pow(5.1, 10.3)) / atan(-104545.035) + log10(10) - e + pi;
+    
+    print(val);
+    
+    f1();
+    
+    float f = f2(1, 2);
+    
+    print(f);
+    
+    int x = 0;
+    int y = fib(x);
+    
+    while (y < 100) {
+        x += 1;
+        t = fib(x);
+    }
+    
+    // exit(0) // exit early
+    
+    // print("y=" + (string) y); // raises error
+    print("y=" + (string) y);
+    
+    for (int i = 0; i < 10; i = i + 1) {
+        print(i);
+    }
+    
+    int i = 0;
+    
+    {
+        do {
+            i += 1;
+            if (i == 50) {
+                break;
+            }
+        } while (i < 100);
+        
+        print(i);
+    }
+    
+    if (true) {
+        print("true!\n");
+    }
+    
+    string str = "x" + "y" + "z";
+    
+    print(str)
+    
+    // assert(false);
+}
