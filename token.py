@@ -35,32 +35,33 @@ class TokenType(enum.Enum):
     RCURLY_BRACE = 24
     SEMICOLON = 25
     COMMA = 26
-    ASSIGN = 27
-    BIN_OP = 28
-    UNARY_OP = 29
+    DOT = 27
+    ASSIGN = 28
+    BIN_OP = 29
+    UNARY_OP = 30
     
     # Logical
-    EQUAL = 30
-    NOT_EQU = 31
-    AND = 32
-    OR = 33
-    NOT = 34
-    LESS = 35
-    GREATER = 36
-    LESS_EQ = 37
-    GREATER_EQ = 38
+    EQUAL = 31
+    NOT_EQU = 32
+    AND = 33
+    OR = 34
+    NOT = 35
+    LESS = 36
+    GREATER = 37
+    LESS_EQ = 38
+    GREATER_EQ = 39
     
     # Other tokens
-    IDENT = 39
-    INT_CONST = 40
-    FLT_CONST = 41
-    PLUS_EQ = 42 # +=
-    MINUS_EQ = 43 # -=
-    TRUE = 44
-    FALSE = 45
-    STRING_CONST = 46
-    UNK = 47
-    EOF = 48
+    IDENT = 40
+    INT_CONST = 41
+    FLT_CONST = 42
+    PLUS_EQ = 43 # +=
+    MINUS_EQ = 44 # -=
+    TRUE = 45
+    FALSE = 46
+    STRING_CONST = 47
+    UNK = 48
+    EOF = 49
 
 class Token(object):
     def __init__(self, type, value, lineno):
@@ -69,4 +70,4 @@ class Token(object):
         self.lineno = lineno
     
     def __str__(self):
-        return "Token(type={}, value={}, lineno={})".format(self.type, self.value, self.lineno)
+        return "Token(type={}, value=\"{}\", lineno={})".format(self.type, self.value, self.lineno)

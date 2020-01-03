@@ -56,6 +56,9 @@ class Lexer(object):
         if self.current == ',':
             return self._make_token(TokenType.COMMA, ',')
         
+        if self.current == '.':
+            return self._make_token(TokenType.DOT, '.')
+        
         if self.current == '=':
             self._next_ch()
             
@@ -72,7 +75,7 @@ class Lexer(object):
             if (peek is not None and
                 op in ['+', '-'] and
                 (peek == '(' or peek.isalnum()) and
-                self.prev_type in [None, TokenType.BIN_OP, TokenType.LPAREN, TokenType.COMMA, TokenType.EQUAL, TokenType.NOT_EQU, TokenType.LESS, TokenType.GREATER, TokenType.LESS_EQ, TokenType.GREATER_EQ]):
+                self.prev_type in [None, TokenType.ASSIGN, TokenType.BIN_OP, TokenType.LPAREN, TokenType.COMMA, TokenType.EQUAL, TokenType.NOT_EQU, TokenType.LESS, TokenType.GREATER, TokenType.LESS_EQ, TokenType.GREATER_EQ]):
                 return self._make_token(TokenType.UNARY_OP, op)
             
             if (peek is not None and
@@ -123,7 +126,6 @@ class Lexer(object):
             self.prev_type = TokenType.GREATER
             return Token(TokenType.GREATER, '>', self.lineno)
         
-        # TODO: Handle escape characters
         if self.current == '"':
             str = ""
             
@@ -136,9 +138,9 @@ class Lexer(object):
             
             return self._make_token(TokenType.STRING_CONST, str)
         
-        return Token(TokenType.UNK, self.current, self.lineno)
+        return self._make_token(TokenType.UNK, self.current)
     
-    def _make_token(type, value):
+    def _make_token(self, type, value):
         self._next_ch()
         self.prev_type = type
         return Token(type, value, self.lineno)
@@ -167,7 +169,7 @@ class Lexer(object):
             self._next_ch()
         
         if self.current is not None and self.current == '.':
-            # consume a decimal point
+            num += self.current
             self._next_ch()
             
             while self.current is not None and self.current.isdigit():
@@ -177,7 +179,7 @@ class Lexer(object):
             self.prev_type = TokenType.FLT_CONST
             return Token(TokenType.FLT_CONST, num, self.lineno)
         
-        self.prev_type = INT_CONST
+        self.prev_type = TokenType.INT_CONST
         return Token(TokenType.INT_CONST, num, self.lineno)
     
     def _eat_comment(self):
@@ -204,7 +206,7 @@ class Lexer(object):
         self.idx += 1
         self.current = None if self.idx >= self.prgm_len else self.prgm[self.idx]
     
-    def _init_dct(self):
+    def _init_dict(self):
         self.dct['int'] = TokenType.INT
         self.dct['float'] = TokenType.FLOAT
         self.dct['bool'] = TokenType.BOOL
