@@ -1,73 +1,53 @@
 import enum
 
 class TokenTag(enum.Enum):
-    # Build-in types
+    # Builtin types
     INT = 0
     FLOAT = 1
     BOOL = 2
     STRING = 3
-    VOID = 4
     
     # Instruction words
-    IF = 5
-    ELSE = 6
-    WHILE = 7
-    FOR = 8
-    DO = 9
-    BREAK = 10
-    CONTINUE = 11
-    RETURN = 12
-    USE = 13 # It's like C's #include
-    OBJECT = 14 # Same idea as C's struct
+    IF = 4
+    ELSE = 5
+    WHILE = 6
+    FOR = 7
+    DO = 8
+    BREAK = 9
+    CONTINUE = 10
     
-    # Build-in functions
-    SCAN = 15
-    PRINT = 16
-    ASSERT = 17
-    EXIT = 18
+    # Builtin functions
+    PRINT = 11
     
     # Single character tokens
-    LPAREN = 19
-    RPAREN = 20
-    LSQ_BRCKT = 21
-    RSQ_BRCKT = 22
-    LCURLY_BRACE = 23
-    RCURLY_BRACE = 24
-    SEMICOLON = 25
-    COMMA = 26
-    DOT = 27
-    ASSIGN = 28
-    BIN_OP = 29
-    UNARY_OP = 30
-    
-    # Logical
-    EQUAL = 31
-    NOT_EQU = 32
-    AND = 33
-    OR = 34
-    NOT = 35
-    LESS = 36
-    GREATER = 37
-    LESS_EQ = 38
-    GREATER_EQ = 39
+    LPAREN = 12
+    RPAREN = 13
+    LBRACK = 14
+    RBRACK = 15
+    SEMICOLON = 16
+    ASSIGN = 17
+    REL_OP = 18 # ==, !=, <, >, <=, >=
+    ADD_OP = 19 # +, -, ||
+    OP = 20 # *, /, %, &&
+    UNARY_OP = 21 # +, -, !
     
     # Other tokens
-    IDENT = 40
-    INT_CONST = 41
-    FLT_CONST = 42
-    PLUS_EQ = 43 # +=
-    MINUS_EQ = 44 # -=
-    TRUE = 45
-    FALSE = 46
-    STR_LITERAL = 47
-    UNK = 48
-    EOF = 49
+    IDENT = 22
+    INT_CONST = 23
+    RL_CONST = 24
+    PLUS_EQ = 25 # +=
+    MINUS_EQ = 26 # -=
+    TRUE = 27
+    FALSE = 28
+    STR_LITERAL = 29
+    UNK = 30
+    EOF = 31
 
 class Token(object):
-    def __init__(self, tag, value, lineno):
+    def __init__(self, tag, lexeme, lineno):
         self.tag = tag
-        self.value = value
+        self.lexeme
         self.lineno = lineno
     
     def __str__(self):
-        return "Token(tag={}, value=\"{}\", lineno={})".format(self.tag, self.value, self.lineno)
+        return "Token(tag={}, lexeme=\"{}\", lineno={})".format(self.tag, self.lexeme, self.lineno)

@@ -1,0 +1,44 @@
+PEEP()
+{
+    int a;
+    
+    print(a);
+    
+    int b = 10;
+    a = 20;
+    
+    print(a);
+    print(b);
+    print(a + b);
+    
+    float x;
+    
+    print(x);
+    
+    float y = 2.71;
+    x = 3.14;
+    
+    print(x);
+    print(y);
+    print(x + y);
+    
+    bool u;
+    
+    print(u);
+    
+    bool v = true;
+    u = true;
+    
+    print(u);
+    
+    string s1;
+    
+    print(s1);
+    
+    string s2 = "foo";
+    s1 = "bar";
+    
+    print(s1);
+    print(s2);
+    print(s1 + s2);
+}

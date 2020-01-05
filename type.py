@@ -8,10 +8,3 @@ class Type(enum.Enum):
     FLOAT = 1
     BOOL = 2
     STRING = 3
-    VOID = 4
-    
-    # Other types
-    ARRAY = 5
-    FUNCTION = 6
-    OBJECT_DEC = 7 # Object declaration
-    OBJECT = 8

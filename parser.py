@@ -4,14 +4,15 @@ class Scope(object):
         self.parent = parent
         self.symtab = {}
     
-    def put(self, ident_name, ident):
-        self.symtab[ident_name] = ident
+    # parameter symb is identifier's name
+    def put(self, symb, ident):
+        self.symtab[symb] = ident
     
-    def lookup(self, ident_name):
+    def lookup(self, symb):
         scope = self
         
         while scope is not None:
-            entry = scope.symtab.get(ident_name)
+            entry = scope.symtab.get(symb)
             
             if entry is not None:
                 return entry
