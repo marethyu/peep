@@ -2,7 +2,7 @@
 
 EBNF Grammar for Peep programming language
 
-<program> ::= "PEEP" "(" ")" <block>
+<program> ::= <block>
 <block> ::= "{" { <statement> } "}"
 <statement> ::= "if" <paren_expression> <block> [ [ "else" "if" <paren_expression> <block> ] "else" <block> ] |
                 "while" <paren_expression> <block> |
@@ -54,10 +54,12 @@ EBNF Grammar for Peep programming language
 IMPORTANT: PLEASE START SMALL!
 
 Next steps (not necessary in order):
+- Global variables
 - Command line arguments
 - Generalize for statement
 - Functions
 - Builtin functions
+- Variable references
 - Casting
 - Arrays
 - Modules

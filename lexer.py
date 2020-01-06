@@ -1,10 +1,12 @@
 from token import TokenTag, Token
 
+# global variable
+lineno = 1
+
 class Lexer(object):
-    def __init__(self, prgm):
-        self.prgm = prgm
+    def __init__(self, file):
+        self.prgm = file.read()
         self.prgm_len = len(self.prgm)
-        self.lineno = 1
         self.idx = 0
         self.current = prgm[self.idx]
         self.prev_tag = None # for detection of unary operators
@@ -13,7 +15,7 @@ class Lexer(object):
     
     def next_token(self):
         if self.current is None:
-            return Token(TokenTag.EOF, None, self.lineno)
+            return Token(TokenTag.EOF, None, lineno)
         
         if self.current.isspace():
             self._eat_whitespace()
@@ -54,7 +56,7 @@ class Lexer(object):
                 return self._make_token(TokenTag.REL_OP, '==')
             
             self.prev_tag = TokenTag.ASSIGN
-            return Token(TokenTag.ASSIGN, '=', self.lineno)
+            return Token(TokenTag.ASSIGN, '=', lineno)
         
         if self.current in ['+', '-', '*', '/', '%']:
             op = self.current
@@ -83,7 +85,7 @@ class Lexer(object):
                 return self._make_token(TokenTag.REL_OP, '!=')
             
             self.prev_tag = TokenTag.UNARY_OP
-            return Token(TokenTag.UNARY_OP, '!', self.lineno)
+            return Token(TokenTag.UNARY_OP, '!', lineno)
         
         if self.current == '&':
             peek = self._peek()
@@ -106,7 +108,7 @@ class Lexer(object):
                 return self._make_token(TokenTag.REL_OP, '<=')
             
             self.prev_tag = TokenTag.REL_OP
-            return Token(TokenTag.REL_OP, '<', self.lineno)
+            return Token(TokenTag.REL_OP, '<', lineno)
         
         if self.current == '>':
             self._next_ch()
@@ -115,7 +117,7 @@ class Lexer(object):
                 return self._make_token(TokenTag.REL_OP, '>=')
             
             self.prev_tag = TokenTag.REL_OP
-            return Token(TokenTag.REL_OP, '>', self.lineno)
+            return Token(TokenTag.REL_OP, '>', lineno)
         
         if self.current == '"':
             str = ""
@@ -134,7 +136,7 @@ class Lexer(object):
     def _make_token(self, tag, lexeme):
         self._next_ch()
         self.prev_tag = tag
-        return Token(tag, lexeme, self.lineno)
+        return Token(tag, lexeme, lineno)
     
     def _make_word_tok(self):
         word = ""
@@ -147,10 +149,10 @@ class Lexer(object):
         
         if tag is not None:
             self.prev_tag = tag
-            return Token(tag, word, self.lineno)
+            return Token(tag, word, lineno)
         
         self.prev_tag = TokenTag.IDENT
-        return Token(TokenTag.IDENT, word, self.lineno)
+        return Token(TokenTag.IDENT, word, lineno)
     
     def _make_num_tok(self):
         num = ""
@@ -168,10 +170,10 @@ class Lexer(object):
                 self._next_ch()
             
             self.prev_tag = TokenTag.RL_CONST
-            return Token(TokenTag.RL_CONST, num, self.lineno)
+            return Token(TokenTag.RL_CONST, num, lineno)
         
         self.prev_tag = TokenTag.INT_CONST
-        return Token(TokenTag.INT_CONST, num, self.lineno)
+        return Token(TokenTag.INT_CONST, num, lineno)
     
     def _eat_comment(self):
         # consume "//"
@@ -193,7 +195,7 @@ class Lexer(object):
     
     def _next_ch(self):
         if self.current == '\n':
-            self.lineno += 1
+            lineno += 1
         self.idx += 1
         self.current = None if self.idx >= self.prgm_len else self.prgm[self.idx]
     
@@ -210,5 +212,6 @@ class Lexer(object):
         self.dct['break'] = TokenTag.BREAK
         self.dct['continue'] = TokenTag.CONTINUE
         self.dct['print'] = TokenTag.PRINT
+        self.dct["scan"] = TokenTag.SCAN
         self.dct['true'] = TokenTag.TRUE
         self.dct['false'] = TokenTag.FALSE

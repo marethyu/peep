@@ -18,30 +18,31 @@ class TokenTag(enum.Enum):
     
     # Builtin functions
     PRINT = 11
+    SCAN = 12
     
     # Single character tokens
-    LPAREN = 12
-    RPAREN = 13
-    LBRACK = 14
-    RBRACK = 15
-    SEMICOLON = 16
-    ASSIGN = 17
-    REL_OP = 18 # ==, !=, <, >, <=, >=
-    ADD_OP = 19 # +, -, ||
-    OP = 20 # *, /, %, &&
-    UNARY_OP = 21 # +, -, !
+    LPAREN = 13
+    RPAREN = 14
+    LBRACK = 15
+    RBRACK = 16
+    SEMICOLON = 17
+    ASSIGN = 18
+    REL_OP = 19 # ==, !=, <, >, <=, >=
+    ADD_OP = 20 # +, -, ||
+    OP = 21 # *, /, %, &&
+    UNARY_OP = 22 # +, -, !
     
     # Other tokens
-    IDENT = 22
-    INT_CONST = 23
-    RL_CONST = 24
-    PLUS_EQ = 25 # +=
-    MINUS_EQ = 26 # -=
-    TRUE = 27
-    FALSE = 28
-    STR_LITERAL = 29
-    UNK = 30
-    EOF = 31
+    IDENT = 23
+    INT_CONST = 24
+    RL_CONST = 25
+    PLUS_EQ = 26 # +=
+    MINUS_EQ = 27 # -=
+    TRUE = 28
+    FALSE = 29
+    STR_LITERAL = 30
+    UNK = 31
+    EOF = 32
 
 class Token(object):
     def __init__(self, tag, lexeme, lineno):

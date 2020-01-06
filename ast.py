@@ -1,4 +1,5 @@
 import enum
+import lexer
 
 from abc import ABC, abstractmethod
 
@@ -15,8 +16,8 @@ class Kind(enum.Enum):
     
     # Statements
     IF = 8
-    FOR = 9
-    WHILE = 10
+    WHILE = 9
+    FOR = 10
     DO_WHILE = 11
     EXPR = 12 # this is actually a statement
     BLOCK = 13 # a collection of statements
@@ -26,6 +27,7 @@ class ASTNode(ABC):
     def __init__(self, kind, value):
         self.kind = kind
         self.value = value
+        self.lineno = lexer.lineno
     
     @abstractmethod
     def accept(self, tree_walker):
@@ -112,14 +114,23 @@ class Not(UnaryOp):
         tree_walker.visit_not(self)
 
 class If(ASTNode):
-    def __init__(self, test, block, elif_blk=None, else_blk=None):
+    def __init__(self, test, block, elif_br=None, else_br=None):
         super.__init__(Kind.IF, None)
         self.block = block
-        self.elif_blk = elif_blk
-        self.else_blk = else_blk
+        self.elif_br = elif_br
+        self.else_br = else_br
     
     def accept(self, tree_walker):
         tree_walker.visit_if(self)
+
+class While(ASTNode):
+    def __init__(self, test, block):
+        super.__init__(Kind.WHILE, None)
+        self.test = test
+        self.block = block
+    
+    def accept(self, tree_walker):
+        tree_walker.visit_while(self)
 
 class For(ASTNode):
     def __init__(self, init, test, stmt):
@@ -130,15 +141,6 @@ class For(ASTNode):
     
     def accept(self, tree_walker):
         tree_walker.visit_for(self)
-
-class While(ASTNode):
-    def __init__(self, test, block):
-        super.__init__(Kind.WHILE, None)
-        self.test = test
-        self.block = block
-    
-    def accept(self, tree_walker):
-        tree_walker.visit_while(self)
 
 class DoWhile(ASTNode):
     def __init__(self, block, test):
