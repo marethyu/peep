@@ -1,6 +1,7 @@
 from ast import *
-from err import errlist, UndeclaredIdentError, SyntaxError
+from err import UndeclaredIdentError, SyntaxError
 from token import TokenTag
+from type import Type
 
 class Scope(object):
     def __init__(self, parent):
@@ -47,9 +48,9 @@ class Parser(object):
     <assignment> ::= <identifier> "=" <expression>
     <declare_assign> ::= <builtin_type> <identifier> "=" <expression>
     <declaration> ::= <builtin_type> <identifier>
-    <paren_expression> ::= "(" <expression> ")"
     <increment> ::= <identifier> "+=" <expression>
     <decrement> ::= <identifier> "-=" <expression>
+    <paren_expression> ::= "(" <expression> ")"
     <expression> ::= <simple_expression> [ <relational_op> <simple_expression> ]
     <simple_expression> ::= <term> [ <addictive_op> <term> ]
     <term> ::= <factor> [ <op> <factor> ]
@@ -161,33 +162,116 @@ class Parser(object):
             init = None
             test = None
             stmt = None
+            block = None
             
             self._match(TokenTag.FOR)
             self._match(TokenTag.LPAREN)
             
-            init = self._delcare_assign()
-            self._match(TokenTag.SEMICOLON)
+            init = self._declaration(True)
             test = self._expr()
             self._match(TokenTag.SEMICOLON)
             
-            if self.look.tag is not TokenTag.IDENT:
-                errlist.append(SyntaxError(self.look.tag, self.look.lineno))
-            
-            ident = self.env.lookup(# ...
-            # we need good error handling system...
+            ident = self._check_ident()
             
             if self.look.tag is TokenTag.ASSIGN:
-                stmt = self._assign()
-            elif self.look.tag is T
+                stmt = self._assign(ident)
+            elif self.look.tag is TokenTag.PLUS_EQ:
+                stmt = self._inc(ident)
+            elif self.look.tag is TokenTag.MINUS_EQ:
+                stmt = self._dec(ident)
+            else:
+                raise SyntaxError(self.look.tag, self.look.lineno)
             
             self._match(TokenTag.RPAREN)
+            
+            node = For(init, test, stmt, self._block())
+        elif self.look.tag is TokenTag.DO:
+            self._match(TokenTag.DO)
+            node = DoWhile(self._block(), self._paren_expr())
+            self._match(TokenTag.SEMICOLON)
+        elif self.look.tag is TokenTag.BREAK:
+            self._match(TokenTag.BREAK)
+            node = Break()
+            self._match(TokenTag.SEMICOLON)
+        elif self.look.tag is TokenTag.CONTINUE:
+            self._match(TokenTag.CONTINUE)
+            node = Continue()
+            self._match(TokenTag.SEMICOLON)
+        elif self.look.tag is TokenTag.LBRACK:
+            node = self._block()
+        elif self.look.tag in [TokenTag.INT, TokenTag.FLOAT, TokenTag.BOOL, TokenTag.STRING]:
+            node = self._declaration(False)
+        elif self.look.tag is TokenTag.IDENT:
+            ident = self._check_ident()
+            
+            if self.look.tag is TokenTag.ASSIGN:
+                node = self._assign(ident)
+            elif self.look.tag is TokenTag.PLUS_EQ:
+                node = self._inc(ident)
+            elif self.look.tag is TokenTag.MINUS_EQ:
+                node = self._dec(ident)
+            else:
+                raise SyntaxError(self.look.tag, self.look.lineno)
+            
+            self._match(TokenTag.SEMICOLON)
+        elif self.look.tag is TokenTag.PRINT:
+            self._match(TokenTag.PRINT)
+            node = Print(self._paren_expr())
+        else: # expression
+            node = self._expr()
         
         return node
     
+    def _assign(self, ident):
+        self._match(TokenTag.ASSIGN)
+        return Assign(ident, self._expr())
+    
+    def _declaration(self, force_assign):
+        type = None
+        
+        if self.look.tag is TokenTag.INT:
+            type = Type.INT
+            self._match(TokenTag.INT)
+        elif self.look.tag is TokenTag.FLOAT:
+            type = Type.FLOAT
+            self._match(TokenTag.FLOAT)
+        elif self.look.tag is TokenTag.BOOL:
+            type = Type.BOOL
+            self._match(TokenTag.BOOL)
+        else:
+            type = Type.STRING
+            self._match(TokenTag.STRING)
+        
+        ident = Identifier(type, self.look.lexeme)
+        env.put(self.look.lexeme, ident)
+        self._match(TokenTag.IDENT)
+        
+        if not force_assign and self.look.tag is TokenTag.SEMICOLON:
+            self._match(TokenTag.SEMICOLON)
+            return Declaration(ident)
+        else:
+            self._match(TokenTag.ASSIGN)
+            node = Assign(ident, self._expr())
+            self._match(TokenTag.SEMICOLON)
+            return node
+    
+    def _inc(self, ident):
+        pass
+    
+    def _check_ident(self):
+        symb = self.look.lexeme
+        
+        self._match(TokenTag.IDENT)
+        ident = self.env.lookup(symb)
+        
+        if ident is None:
+            raise UndeclaredIdentError(symb, self.look.lineno)
+        
+        return ident
+    
     def _match(self, tag):
         if self.look.tag is not tag:
-            errlist.append(SyntaxError(self.look.tag, self.look.lineno))
-            
+            raise SyntaxError(self.look.tag, self.look.lineno)
         self._move()
     
     def _move(self):

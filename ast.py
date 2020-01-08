@@ -7,21 +7,24 @@ class Kind(enum.Enum):
     # Expressions
     IDENT = 0
     CONST = 1
-    ASSIGN = 2
-    REL_OP = 3
-    ADD_OP = 4
-    OP = 5
-    U_MINUS = 6
-    NOT = 7
+    DECLARE = 2
+    ASSIGN = 3
+    REL_OP = 4
+    ADD_OP = 5
+    OP = 6
+    U_MINUS = 7
+    NOT = 8
     
     # Statements
-    IF = 8
-    WHILE = 9
-    FOR = 10
-    DO_WHILE = 11
-    EXPR = 12 # this is actually a statement
-    BLOCK = 13 # a collection of statements
-    PRGM = 14 # an entire program
+    IF = 9
+    WHILE = 10
+    FOR = 11
+    DO_WHILE = 12
+    BREAK = 13
+    CONT = 14
+    EXPR = 15 # this is actually a statement
+    BLOCK = 16 # a collection of statements
+    PRGM = 17 # an entire program
 
 class ASTNode(ABC):
     def __init__(self, kind, value):
@@ -33,7 +36,7 @@ class ASTNode(ABC):
     def accept(self, tree_walker):
         pass
 
-class Ident(ASTNode):
+class Identifier(ASTNode):
     def __init__(self, type, name):
         super.__init__(Kind.IDENT, name)
         self.type = type
@@ -41,7 +44,7 @@ class Ident(ASTNode):
     def accept(self, tree_walker):
         tree_walker.visit_ident(self)
 
-class Const(ASTNode):
+class Constant(ASTNode):
     def __init__(self, type, value):
         super.__init__(Kind.CONST, value)
         self.type = type
@@ -49,11 +52,19 @@ class Const(ASTNode):
     def accept(self, tree_walker):
         tree_walker.visit_const(self)
 
+class Declaration(ASTNode):
+    def __init__(self, ident):
+        super.__init__(Kind.DECLARE, None)
+        self.ident = ident
+    
+    def accept(self, tree_walker):
+        tree_walker.visit_decl(self)
+
 class Assign(ASTNode):
-    def __init__(self, ident, const):
+    def __init__(self, ident, expr):
         super.__init__(Kind.ASSIGN, None)
         self.ident = ident
-        self.const = const
+        self.expr = expr
     
     def accept(self, tree_walker):
         tree_walker.visit_assign(self)
@@ -133,11 +144,12 @@ class While(ASTNode):
         tree_walker.visit_while(self)
 
 class For(ASTNode):
-    def __init__(self, init, test, stmt):
+    def __init__(self, init, test, stmt, block):
         super.__init__(Kind.FOR, None)
         self.init = init
         self.test = test
         self.stmt = stmt
+        self.block = block
     
     def accept(self, tree_walker):
         tree_walker.visit_for(self)
@@ -150,6 +162,20 @@ class DoWhile(ASTNode):
     
     def accept(self, tree_walker):
         tree_walker.visit_dowhile(self)
+
+class Break(ASTNode):
+    def __init__(self):
+        super.__init__(Kind.BREAK, None)
+    
+    def accept(self, tree_walker):
+        tree_walker.visit_break(self)
+
+class Continue(ASTNode):
+    def __init__(self):
+        super.__init__(Kind.CONT, None)
+    
+    def accept(self, tree_walker):
+        tree_walker.visit_cont(self)
 
 class Expression(ASTNode):
     def __init__(self, expr):

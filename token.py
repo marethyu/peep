@@ -41,8 +41,7 @@ class TokenTag(enum.Enum):
     TRUE = 28
     FALSE = 29
     STR_LITERAL = 30
-    UNK = 31
-    EOF = 32
+    EOF = 31
 
 class Token(object):
     def __init__(self, tag, lexeme, lineno):

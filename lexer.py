@@ -1,3 +1,4 @@
+from err import LexError
 from token import TokenTag, Token
 
 # global variable
@@ -131,7 +132,7 @@ class Lexer(object):
             
             return self._make_token(TokenTag.STR_LITERAL, str)
         
-        return self._make_token(TokenTag.UNK, self.current)
+        raise LexError("Unknown token {}".format(self.current), lineno)
     
     def _make_token(self, tag, lexeme):
         self._next_ch()
