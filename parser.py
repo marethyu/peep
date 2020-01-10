@@ -46,7 +46,7 @@ class Parser(object):
                     "print" <paren_expression> ";" |
                     ";"
     <assignment> ::= <identifier> "=" <expression>
-    <declare_assign> ::= <builtin_type> <identifier> "=" <expression>
+    <declare_assign> ::= <declaration> "=" <expression>
     <declaration> ::= <builtin_type> <identifier>
     <increment> ::= <identifier> "+=" <expression>
     <decrement> ::= <identifier> "-=" <expression>
@@ -223,10 +223,15 @@ class Parser(object):
         return node
     
     def _assign(self, ident):
+        """<assignment> ::= <identifier> "=" <expression>"""
         self._match(TokenTag.ASSIGN)
         return Assign(ident, self._expr())
     
     def _declaration(self, force_assign):
+        """
+        <declare_assign> ::= <declaration> "=" <expression>
+        <declaration> ::= <builtin_type> <identifier>
+        """
         type = None
         
         if self.look.tag is TokenTag.INT:
@@ -256,6 +261,27 @@ class Parser(object):
             return node
     
     def _inc(self, ident):
+        """<increment> ::= <identifier> "+=" <expression>"""
+        self._match(TokenTag.PLUS_EQ)
+        return Increment(ident, self._expr())
+    
+    def _dec(self, ident):
+        """<decrement> ::= <identifier> "-=" <expression>"""
+        self._match(TokenTag.MINUS_EQ)
+        return Decrement(ident, self._expr())
+    
+    def _paren_expr(self):
+        """<paren_expression> ::= "(" <expression> ")"""
+        node = None
+        
+        self._match(TokenTag.LPAREN)
+        node = self._expr()
+        self._match(TokenTag.RPAREN)
+        
+        return node
+    
+    def _expr(self):
+        """<expression> ::= <simple_expression> [ <relational_op> <simple_expression> ]"""
         pass
     
     def _check_ident(self):

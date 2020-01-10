@@ -7,24 +7,26 @@ class Kind(enum.Enum):
     # Expressions
     IDENT = 0
     CONST = 1
-    DECLARE = 2
-    ASSIGN = 3
-    REL_OP = 4
-    ADD_OP = 5
-    OP = 6
-    U_MINUS = 7
-    NOT = 8
+    REL_OP = 2
+    ADD_OP = 3
+    OP = 4
+    U_MINUS = 5
+    NOT = 6
     
     # Statements
-    IF = 9
-    WHILE = 10
-    FOR = 11
-    DO_WHILE = 12
-    BREAK = 13
-    CONT = 14
-    EXPR = 15 # this is actually a statement
-    BLOCK = 16 # a collection of statements
-    PRGM = 17 # an entire program
+    DECLARE = 7
+    ASSIGN = 8
+    INC = 9
+    DEC = 10
+    IF = 11
+    WHILE = 12
+    FOR = 13
+    DO_WHILE = 14
+    BREAK = 15
+    CONT = 16
+    EXPR = 17 # this is actually a statement
+    BLOCK = 18 # a collection of statements
+    PRGM = 19 # an entire program
 
 class ASTNode(ABC):
     def __init__(self, kind, value):
@@ -51,23 +53,6 @@ class Constant(ASTNode):
     
     def accept(self, tree_walker):
         tree_walker.visit_const(self)
-
-class Declaration(ASTNode):
-    def __init__(self, ident):
-        super.__init__(Kind.DECLARE, None)
-        self.ident = ident
-    
-    def accept(self, tree_walker):
-        tree_walker.visit_decl(self)
-
-class Assign(ASTNode):
-    def __init__(self, ident, expr):
-        super.__init__(Kind.ASSIGN, None)
-        self.ident = ident
-        self.expr = expr
-    
-    def accept(self, tree_walker):
-        tree_walker.visit_assign(self)
 
 # abstract
 class BinaryOp(ASTNode):
@@ -123,6 +108,41 @@ class Not(UnaryOp):
     
     def accept(self, tree_walker):
         tree_walker.visit_not(self)
+
+class Declaration(ASTNode):
+    def __init__(self, ident):
+        super.__init__(Kind.DECLARE, None)
+        self.ident = ident
+    
+    def accept(self, tree_walker):
+        tree_walker.visit_decl(self)
+
+class Assign(ASTNode):
+    def __init__(self, ident, expr):
+        super.__init__(Kind.ASSIGN, None)
+        self.ident = ident
+        self.expr = expr
+    
+    def accept(self, tree_walker):
+        tree_walker.visit_assign(self)
+
+class Increment(ASTNode):
+    def __init__(self, ident, expr):
+        super.__init__(Kind.INC, None)
+        self.ident = ident
+        self.expr = expr
+    
+    def accept(self, tree_walker):
+        tree_walker.visit_inc(self)
+
+class Decrement(ASTNode):
+    def __init__(self, ident, expr):
+        super.__init__(Kind.DEC, None)
+        self.ident = ident
+        self.expr = expr
+    
+    def accept(self, tree_walker):
+        tree_walker.visit_dec(self)
 
 class If(ASTNode):
     def __init__(self, test, block, elif_br=None, else_br=None):
