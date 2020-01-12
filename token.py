@@ -46,7 +46,7 @@ class TokenTag(enum.Enum):
 class Token(object):
     def __init__(self, tag, lexeme, lineno):
         self.tag = tag
-        self.lexeme
+        self.lexeme = lexeme
         self.lineno = lineno
     
     def __str__(self):

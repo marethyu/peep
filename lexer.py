@@ -1,4 +1,3 @@
-from err import LexError
 from token import TokenTag, Token
 
 # global variable
@@ -9,7 +8,7 @@ class Lexer(object):
         self.prgm = file.read()
         self.prgm_len = len(self.prgm)
         self.idx = 0
-        self.current = prgm[self.idx]
+        self.current = self.prgm[self.idx]
         self.prev_tag = None # for detection of unary operators
         self.dct = {}
         self._init_dict()
@@ -132,6 +131,7 @@ class Lexer(object):
             
             return self._make_token(TokenTag.STR_LITERAL, str)
         
+        from err import LexError
         raise LexError("Unknown token {}".format(self.current), lineno)
     
     def _make_token(self, tag, lexeme):
@@ -196,6 +196,7 @@ class Lexer(object):
     
     def _next_ch(self):
         if self.current == '\n':
+            global lineno
             lineno += 1
         self.idx += 1
         self.current = None if self.idx >= self.prgm_len else self.prgm[self.idx]
