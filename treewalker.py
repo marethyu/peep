@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
 
 class TreeWalker(ABC):
+    def __init__(self):
+        pass
+    
     @abstractmethod
     def visit_ident(self, ident):
         pass

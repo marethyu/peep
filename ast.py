@@ -134,6 +134,7 @@ class Decrement(ASTNode):
 class If(ASTNode):
     def __init__(self, test, block, elif_br=None, else_br=None):
         super().__init__(Kind.IF, None)
+        self.test = test
         self.block = block
         self.elif_br = elif_br
         self.else_br = else_br

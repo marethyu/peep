@@ -65,13 +65,13 @@ class Lexer(object):
             if (peek is not None and
                 op in ['+', '-'] and
                 (peek == '(' or peek.isalnum()) and
-                self.prev_tag in [None, TokenTag.ASSIGN, TokenTag.LPAREN, TokenTag.COMMA, TokenTag.REL_OP, TokenTag.ADD_OP, TokenTag.OP]):
+                self.prev_tag in [None, TokenTag.ASSIGN, TokenTag.LPAREN, TokenTag.REL_OP, TokenTag.ADD_OP, TokenTag.OP]):
                 return self._make_token(TokenTag.UNARY_OP, op)
             
             if (peek is not None and
                 op in ['+', '-'] and
                 peek == '='):
-                return self._make_token(TokenTag.PLUS_EQ if op is '+' else TokenTag.MINUS_EQ, op + '=')
+                return self._make_token(TokenTag.PLUS_EQ if op is '+' else TokenTag.MINUS_EQ, op + '=', True)
             
             if op in ['+', '-']:
                 return self._make_token(TokenTag.ADD_OP, op)
@@ -134,8 +134,10 @@ class Lexer(object):
         from err import LexError
         raise LexError("Unknown token {}".format(self.current), lineno)
     
-    def _make_token(self, tag, lexeme):
+    def _make_token(self, tag, lexeme, skip_twice=False):
         self._next_ch()
+        if skip_twice:
+            self._next_ch()
         self.prev_tag = tag
         return Token(tag, lexeme, lineno)
     

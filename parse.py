@@ -1,5 +1,5 @@
 from ast import *
-from err import UndeclaredIdentError, SyntaxError
+from err import DuplicateIdentError, UndeclaredIdentError, SyntaxError
 from token import TokenTag as Tag
 from type import Type
 
@@ -11,6 +11,9 @@ class Scope(object):
     # parameter symb is identifier's name
     def put(self, symb, ident):
         self.symtab[symb] = ident
+    
+    def lookup_local(self, symb):
+        return self.symtab.get(symb)
     
     def lookup(self, symb):
         scope = self
@@ -58,6 +61,7 @@ class Parser(object):
                  [ <unary_op> ] <real_constant> |
                  [ <unary_op> ] <bool_const> |
                  [ <unary_op> ] <paren_expression> |
+                 [ <unary_op> ] <identifier> |
                  <string_literal>
     <identifier> ::= <alpha> [ <alpha_num> ]
     <builtin_type> ::= "int" | "float" | "bool" | "string"
@@ -104,17 +108,23 @@ class Parser(object):
         
         <program> ::= <block>
         """
-        return Program(self._block())
+        node = Program(self._block())
+        self._match(Tag.EOF)
+        return node
     
     def _block(self):
         """<block> ::= "{" { <statement> } "}"""
         node = None
         
+        self.env = Scope(self.env)
         self._match(Tag.LBRACK)
         
         while self.look.tag is not Tag.RBRACK:
             prev_blk = node
             node = Block(prev_blk, self._statement())
+        
+        self._match(Tag.RBRACK)
+        self.env = self.env.parent
         
         return node
     
@@ -187,7 +197,9 @@ class Parser(object):
             node = For(init, test, stmt, self._block())
         elif self.look.tag is Tag.DO:
             self._match(Tag.DO)
-            node = DoWhile(self._block(), self._paren_expr())
+            block = self._block()
+            self._match(Tag.WHILE)
+            node = DoWhile(block, self._paren_expr())
             self._match(Tag.SEMICOLON)
         elif self.look.tag is Tag.BREAK:
             self._match(Tag.BREAK)
@@ -217,6 +229,7 @@ class Parser(object):
         elif self.look.tag is Tag.PRINT:
             self._match(Tag.PRINT)
             node = Print(self._paren_expr())
+            self._match(Tag.SEMICOLON)
         else: # expression
             node = self._expr()
         
@@ -248,7 +261,12 @@ class Parser(object):
             self._match(Tag.STRING)
         
         ident = Identifier(type, self.look.lexeme)
-        env.put(self.look.lexeme, ident)
+        
+        # the new identifier must not exist in local scope
+        if self.env.lookup_local(self.look.lexeme) is not None:
+            raise DuplicateIdentError(self.look.lexeme, self.look.lineno)
+        self.env.put(self.look.lexeme, ident)
+        
         self._match(Tag.IDENT)
         
         if not force_assign and self.look.tag is Tag.SEMICOLON:
@@ -319,6 +337,7 @@ class Parser(object):
                      [ <unary_op> ] <real_constant> |
                      [ <unary_op> ] <bool_const> |
                      [ <unary_op> ] <paren_expression> |
+                     [ <unary_op> ] <identifier> |
                      <string_literal>
         """
         if self.look.tag is Tag.INT_CONST:
@@ -335,6 +354,9 @@ class Parser(object):
             return node
         elif self.look.tag is Tag.LPAREN:
             return self._paren_expr()
+        elif self.look.tag is Tag.IDENT:
+            ident = self._check_ident()
+            return ident
         elif self.look.tag is Tag.UNARY_OP:
             op = self.look.lexeme
             self._match(Tag.UNARY_OP)
