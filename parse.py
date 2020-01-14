@@ -274,7 +274,7 @@ class Parser(object):
             return Declaration(ident)
         else:
             self._match(Tag.ASSIGN)
-            node = Assign(ident, self._expr())
+            node = Assign(Declaration(ident), self._expr())
             self._match(Tag.SEMICOLON)
             return node
     

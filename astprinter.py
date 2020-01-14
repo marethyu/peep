@@ -82,7 +82,8 @@ class ASTPrinter(TreeWalker):
         self._emit('program', lambda: [prgm.block.accept(self)][-1])
     
     def _emit(self, node_name, action):
-        print(' ' * self.indent + node_name)
+        print(' ' * self.indent + 'begin_' + node_name)
         self.indent += 2
         action()
         self.indent -= 2
+        print(' ' * self.indent + 'end_' + node_name)

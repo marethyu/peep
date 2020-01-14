@@ -2,7 +2,9 @@
     int x = 10;
     float y = 3.141;
     bool b = true;
-    string s = "Hah!";
+    string s;
+    
+    s = "Hah!";
     
     if (x == 10) {
         print(100);
