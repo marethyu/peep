@@ -24,3 +24,7 @@ class UndeclaredIdentError(ParseError):
 class SyntaxError(ParseError):
     def __init__(self, unexpected_tag, lineno):
         super().__init__("{} unexpected!".format(unexpected_tag), lineno)
+
+class TypeError(PeepError):
+    def __init__(self, lineno, msg):
+        super().__init__(lineno, msg)

@@ -1,6 +1,8 @@
 import enum
 
 from abc import ABC, abstractmethod
+from err import TypeError
+from type import Type
 
 class Kind(enum.Enum):
     # Expressions
@@ -62,6 +64,12 @@ class BinaryOp(ASTNode):
         self.left = left
         self.right = right
         self.op = op
+        
+        if not Type.check_match(left.type, right.type):
+            raise TypeError(self.lineno, "Types does not match!")
+        if not Type.is_type_ok(left.type, op):
+            raise TypeError("Incompatible types for an operator")
+        self.type = Type.combine(left.type, op)
     
     def accept(self, tree_walker):
         pass
@@ -92,6 +100,10 @@ class UnaryOp(ASTNode):
         super().__init__(Kind.U_OP, None)
         self.op = op
         self.operand = operand
+        
+        if not Type.is_type_ok(operand.type, op, is_unary=True):
+            raise TypeError("Incompatible types for an operator")
+        self.type = Type.combine(operand.type, op)
     
     def accept(self, tree_walker):
         tree_walker.visit_uop(self)
@@ -100,6 +112,7 @@ class Declaration(ASTNode):
     def __init__(self, ident):
         super().__init__(Kind.DECLARE, None)
         self.ident = ident
+        self.type = self.ident.type
     
     def accept(self, tree_walker):
         tree_walker.visit_decl(self)
@@ -109,6 +122,9 @@ class Assign(ASTNode):
         super().__init__(Kind.ASSIGN, None)
         self.ident = ident
         self.expr = expr
+        
+        if not Type.check_match(ident.type, expr.type):
+            raise TypeError(self.lineno, "Types does not match!")
     
     def accept(self, tree_walker):
         tree_walker.visit_assign(self)
@@ -118,6 +134,9 @@ class Increment(ASTNode):
         super().__init__(Kind.INC, None)
         self.ident = ident
         self.expr = expr
+        
+        if not Type.check_match(ident.type, expr.type):
+            raise TypeError(self.lineno, "Types does not match!")
     
     def accept(self, tree_walker):
         tree_walker.visit_inc(self)
@@ -127,6 +146,9 @@ class Decrement(ASTNode):
         super().__init__(Kind.DEC, None)
         self.ident = ident
         self.expr = expr
+        
+        if not Type.check_match(ident.type, expr.type):
+            raise TypeError(self.lineno, "Types does not match!")
     
     def accept(self, tree_walker):
         tree_walker.visit_dec(self)
@@ -138,6 +160,9 @@ class If(ASTNode):
         self.block = block
         self.elif_br = elif_br
         self.else_br = else_br
+        
+        if not Type.is_bool(test.type):
+            raise TypeError(self.lineno, "Expression inside (...) must return bool!")
     
     def accept(self, tree_walker):
         tree_walker.visit_if(self)
@@ -147,6 +172,9 @@ class While(ASTNode):
         super().__init__(Kind.WHILE, None)
         self.test = test
         self.block = block
+        
+        if not Type.is_bool(test.type):
+            raise TypeError(self.lineno, "Expression inside (...) must return bool!")
     
     def accept(self, tree_walker):
         tree_walker.visit_while(self)
@@ -158,6 +186,9 @@ class For(ASTNode):
         self.test = test
         self.stmt = stmt
         self.block = block
+        
+        if not Type.is_bool(test.type):
+            raise TypeError(self.lineno, "Expression inside (...) must return bool!")
     
     def accept(self, tree_walker):
         tree_walker.visit_for(self)
@@ -167,6 +198,9 @@ class DoWhile(ASTNode):
         super().__init__(Kind.DO_WHILE, None)
         self.block = block
         self.test = test
+        
+        if not Type.is_bool(test.type):
+            raise TypeError(self.lineno, "Expression inside (...) must return bool!")
     
     def accept(self, tree_walker):
         tree_walker.visit_dowhile(self)
