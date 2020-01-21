@@ -154,12 +154,11 @@ class Decrement(ASTNode):
         tree_walker.visit_dec(self)
 
 class If(ASTNode):
-    def __init__(self, test, block, elif_br=None, else_br=None):
+    def __init__(self, test, block, brs):
         super().__init__(Kind.IF, None)
         self.test = test
         self.block = block
-        self.elif_br = elif_br
-        self.else_br = else_br
+        self.brs = brs # empty for simple if stmt, contains a element (else branch) for if-else stmt, >1 elements means elif branch (s) preceding a else branch
         
         if not Type.is_bool(test.type):
             raise TypeError(self.lineno, "Expression inside (...) must return bool!")

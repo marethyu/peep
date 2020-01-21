@@ -150,21 +150,17 @@ class Parser(object):
         
         if self.look.tag is Tag.IF:
             self._match(Tag.IF)
-            node = If(self._paren_expr(), self._block())
+            node = If(self._paren_expr(), self._block(), [])
             
-            if self.look.tag is Tag.ELSE:
+            while self.look.tag is Tag.ELSE:
                 self._match(Tag.ELSE)
                 
-                elif_br = None
-                else_br = None
-                
                 if self.look.tag is Tag.IF:
-                    elif_br = self._statement() # consume another if statement recursively
+                    self._match(Tag.IF)
+                    node.brs.append(If(self._paren_expr(), self._block(), [])) # consume else-if branch
                 else: # self.look.tag is Tag.LBRACK
-                    else_br = self._block() # consume else branch
-                
-                node.elif_br = elif_br
-                node.else_br = else_br
+                    node.brs.append(self._block()) # consume else branch
+                    break
         elif self.look.tag is Tag.WHILE:
             self._match(Tag.WHILE)
             node = While(self._paren_expr(), self._block())

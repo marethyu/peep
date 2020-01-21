@@ -43,10 +43,14 @@ class ASTPrinter(TreeWalker):
                                   dec.expr.accept(self)][-1])
     
     def visit_if(self, if_):
-        self._emit('if', lambda: [if_.test.accept(self),
-                                  if_.block.accept(self),
-                                  if_.elif_br.accept(self) if if_.elif_br is not None else None,
-                                  if_.else_br.accept(self) if if_.else_br is not None else None][-1])
+        print(' ' * self.indent + 'begin_if')
+        self.indent += 2
+        if_.test.accept(self)
+        if_.block.accept(self)
+        for branch in if_.brs:
+            branch.accept(self)
+        self.indent -= 2
+        print(' ' * self.indent + 'end_if')
     
     def visit_while(self, while_):
         self._emit('while', lambda: [while_.test.accept(self),
