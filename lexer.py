@@ -71,7 +71,7 @@ class Lexer(object):
             if (peek is not None and
                 op in ['+', '-'] and
                 peek == '='):
-                return self._make_token(TokenTag.PLUS_EQ if op is '+' else TokenTag.MINUS_EQ, op + '=', True)
+                return self._make_token(TokenTag.PLUS_EQ if op == '+' else TokenTag.MINUS_EQ, op + '=', True)
             
             if op in ['+', '-']:
                 return self._make_token(TokenTag.ADD_OP, op)
@@ -125,7 +125,7 @@ class Lexer(object):
             # consume '"'
             self._next_ch()
             
-            while self.current is not None and self.current is not '"':
+            while self.current is not None and self.current != '"':
                 str += self.current
                 self._next_ch()
             
@@ -183,7 +183,7 @@ class Lexer(object):
         self._next_ch()
         self._next_ch()
         
-        while self.current is not '\n':
+        while self.current != '\n':
             self._next_ch()
         # consume '\n'
         self._next_ch()

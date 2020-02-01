@@ -1,9 +1,17 @@
 from treewalker import TreeWalker
 
 class ASTPrinter(TreeWalker):
-    def __init__(self):
+    def __init__(self, tree):
         super().__init__()
+        self.tree = tree
         self.indent = 0
+    
+    def print_ast(self):
+        if self.tree is None:
+            return
+        print("BEGIN AST")
+        self.tree.accept(self)
+        print("END AST")
     
     def visit_ident(self, ident):
         print(' ' * self.indent + ident.value + " (type={})".format(ident.type)) # value is a name of the identifier
