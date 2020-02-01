@@ -94,6 +94,7 @@ class Parser(object):
     - Arrays
     - Modules
     - Classes
+    - Make language loosenly typed (take PHP for example)
     """
     
     def __init__(self, lexer):

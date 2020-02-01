@@ -1,6 +1,7 @@
 from lexer import Lexer
 from parse import Parser
 from astprinter import ASTPrinter
+from intrp import Interpreter
 
 def help():
     help_msg = ("Usage: peep [filename].peep")
@@ -32,8 +33,14 @@ if __name__ == "__main__":
             print(token)
         """
         
+        """
         ast_root = Parser(Lexer(file)).parse()
         printer = ASTPrinter()
         ast_root.accept(printer)
+        """
+        
+        ast_root = Parser(Lexer(file)).parse()
+        interpreter = Interpreter(ast_root)
+        interpreter.interpret()
         
         file.close()

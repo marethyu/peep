@@ -12,34 +12,34 @@ class ASTPrinter(TreeWalker):
         print(' ' * self.indent + const.value + " (type={})".format(const.type))
     
     def visit_relop(self, relop):
-        self._emit(relop.op, lambda: [relop.left.accept(self),
+        self._print(relop.op, lambda: [relop.left.accept(self),
                                       relop.right.accept(self)][-1])
     
     def visit_addop(self, addop):
-        self._emit(addop.op, lambda: [addop.left.accept(self),
+        self._print(addop.op, lambda: [addop.left.accept(self),
                                       addop.right.accept(self)][-1])
     
     def visit_op(self, op):
-        self._emit(op.op, lambda: [op.left.accept(self),
+        self._print(op.op, lambda: [op.left.accept(self),
                                    op.right.accept(self)][-1])
     
     def visit_uop(self, uop):
-        self._emit(uop.op, lambda: [uop.operand.accept(self)][-1])
+        self._print(uop.op, lambda: [uop.operand.accept(self)][-1])
     
     def visit_decl(self, decl):
-        self._emit('declaration', lambda: [print(' ' * self.indent + str(decl.ident.type)),
+        self._print('declaration', lambda: [print(' ' * self.indent + str(decl.ident.type)),
                                            decl.ident.accept(self)][-1])
     
     def visit_assign(self, assign):
-        self._emit('=', lambda: [assign.ident.accept(self),
+        self._print('=', lambda: [assign.ident.accept(self),
                                  assign.expr.accept(self)][-1])
     
     def visit_inc(self, inc):
-        self._emit('+=', lambda: [inc.ident.accept(self),
+        self._print('+=', lambda: [inc.ident.accept(self),
                                   inc.expr.accept(self)][-1])
     
     def visit_dec(self, dec):
-        self._emit('-=', lambda: [dec.ident.accept(self),
+        self._print('-=', lambda: [dec.ident.accept(self),
                                   dec.expr.accept(self)][-1])
     
     def visit_if(self, if_):
@@ -53,39 +53,39 @@ class ASTPrinter(TreeWalker):
         print(' ' * self.indent + 'end_if')
     
     def visit_while(self, while_):
-        self._emit('while', lambda: [while_.test.accept(self),
+        self._print('while', lambda: [while_.test.accept(self),
                                      while_.block.accept(self)][-1])
     
     def visit_for(self, for_):
-        self._emit('for', lambda: [for_.init.accept(self),
+        self._print('for', lambda: [for_.init.accept(self),
                                    for_.test.accept(self),
                                    for_.stmt.accept(self),
                                    for_.block.accept(self)][-1])
     
     def visit_dowhile(self, dowhile):
-        self._emit('do_while', lambda: [dowhile.block.accept(self),
+        self._print('do_while', lambda: [dowhile.block.accept(self),
                                         dowhile.test.accept(self)][-1])
     
     def visit_break(self, break_):
-        self._emit('break', lambda: [None])
+        self._print('break', lambda: [None])
     
     def visit_cont(self, cont):
-        self._emit('continue', lambda: [None])
+        self._print('continue', lambda: [None])
     
     def visit_expr(self, expr):
-        self._emit('expression', lambda: [expr.accept(self)][-1])
+        self._print('expression', lambda: [expr.expr.accept(self)][-1])
     
     def visit_print(self, print_):
-        self._emit('print', lambda: [print_.arg.accept(self)][-1])
+        self._print('print', lambda: [print_.arg.accept(self)][-1])
     
     def visit_blk(self, blk):
-        self._emit('block', lambda: [blk.prev_blk.accept(self) if blk.prev_blk is not None else None,
+        self._print('block', lambda: [blk.prev_blk.accept(self) if blk.prev_blk is not None else None,
                                      blk.stmt.accept(self)][-1])
     
     def visit_prgm(self, prgm):
-        self._emit('program', lambda: [prgm.block.accept(self)][-1])
+        self._print('program', lambda: [prgm.block.accept(self)][-1])
     
-    def _emit(self, node_name, action):
+    def _print(self, node_name, action):
         print(' ' * self.indent + 'begin_' + node_name)
         self.indent += 2
         action()

@@ -29,6 +29,7 @@
     u = true;
     
     print(u);
+    print(v);
     
     string s1;
     

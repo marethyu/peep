@@ -6,7 +6,7 @@
     
     s = "Hah!";
     
-    if (x == 10) {
+    if (x == 11) {
         print(100);
     } else {
         print(50);
@@ -18,9 +18,9 @@
         }
     }
     
-    if (b) {
+    if (!b) {
         print("Yuh");
-    } else if (s == "Hah!") {
+    } else if (s == "fart") {
         print("Shit");
     } else {
         print("Hm");
@@ -39,13 +39,13 @@
     
     int i = 0;
     
-    while (i < 10) {
-        bool b = i == 5;
-        
-        if (b) {
+//  while (i < 10) {
+//      bool b = i == 5;
+//      
+//      if (b) {
             break;
-        }
-    }
+//      }
+//  }
     
     print(i);
     
@@ -57,7 +57,17 @@
     
     do {
         print(j);
+        j += 1;
     } while (j < 10);
     
     print("Poopeepee");
+    
+    int w = 10;
+    
+    {
+        int w = 20;
+        print(w);
+    }
+    
+    print(w);
 }

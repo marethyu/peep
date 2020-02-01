@@ -38,7 +38,7 @@ class ASTNode(ABC):
         self.lineno = lexer.lineno
     
     @abstractmethod
-    def accept(self, tree_walker):
+    def accept(self, tree_walker, ret=False):
         pass
 
 class Identifier(ASTNode):
@@ -46,7 +46,9 @@ class Identifier(ASTNode):
         super().__init__(Kind.IDENT, name)
         self.type = type
     
-    def accept(self, tree_walker):
+    def accept(self, tree_walker, ret=False):
+        if ret:
+            return tree_walker.visit_ident(self)
         tree_walker.visit_ident(self)
 
 class Constant(ASTNode):
@@ -54,7 +56,9 @@ class Constant(ASTNode):
         super().__init__(Kind.CONST, value)
         self.type = type
     
-    def accept(self, tree_walker):
+    def accept(self, tree_walker, ret=False):
+        if ret:
+            return tree_walker.visit_const(self)
         tree_walker.visit_const(self)
 
 # abstract
@@ -71,28 +75,34 @@ class BinaryOp(ASTNode):
             raise TypeError("Incompatible types for an operator")
         self.type = Type.combine(left.type, op)
     
-    def accept(self, tree_walker):
+    def accept(self, tree_walker, ret=False):
         pass
 
 class RelationalOp(BinaryOp):
     def __init__(self, left, right, op):
         super().__init__(Kind.REL_OP, left, right, op)
     
-    def accept(self, tree_walker):
+    def accept(self, tree_walker, ret=False):
+        if ret:
+            return tree_walker.visit_relop(self)
         tree_walker.visit_relop(self)
 
 class AddictiveOp(BinaryOp):
     def __init__(self, left, right, op):
         super().__init__(Kind.ADD_OP, left, right, op)
     
-    def accept(self, tree_walker):
+    def accept(self, tree_walker, ret=False):
+        if ret:
+            return tree_walker.visit_addop(self)
         tree_walker.visit_addop(self)
 
 class Operator(BinaryOp):
     def __init__(self, left, right, op):
         super().__init__(Kind.OP, left, right, op)
     
-    def accept(self, tree_walker):
+    def accept(self, tree_walker, ret=False):
+        if ret:
+            return tree_walker.visit_op(self)
         tree_walker.visit_op(self)
 
 class UnaryOp(ASTNode):
@@ -105,7 +115,9 @@ class UnaryOp(ASTNode):
             raise TypeError("Incompatible types for an operator")
         self.type = Type.combine(operand.type, op)
     
-    def accept(self, tree_walker):
+    def accept(self, tree_walker, ret=False):
+        if ret:
+            return tree_walker.visit_uop(self)
         tree_walker.visit_uop(self)
 
 class Declaration(ASTNode):
@@ -114,7 +126,9 @@ class Declaration(ASTNode):
         self.ident = ident
         self.type = self.ident.type
     
-    def accept(self, tree_walker):
+    def accept(self, tree_walker, ret=False):
+        if ret:
+            return tree_walker.visit_decl(self)
         tree_walker.visit_decl(self)
 
 class Assign(ASTNode):
@@ -126,7 +140,7 @@ class Assign(ASTNode):
         if not Type.check_match(ident.type, expr.type):
             raise TypeError(self.lineno, "Types does not match!")
     
-    def accept(self, tree_walker):
+    def accept(self, tree_walker, ret=False):
         tree_walker.visit_assign(self)
 
 class Increment(ASTNode):
@@ -138,7 +152,7 @@ class Increment(ASTNode):
         if not Type.check_match(ident.type, expr.type):
             raise TypeError(self.lineno, "Types does not match!")
     
-    def accept(self, tree_walker):
+    def accept(self, tree_walker, ret=False):
         tree_walker.visit_inc(self)
 
 class Decrement(ASTNode):
@@ -150,7 +164,7 @@ class Decrement(ASTNode):
         if not Type.check_match(ident.type, expr.type):
             raise TypeError(self.lineno, "Types does not match!")
     
-    def accept(self, tree_walker):
+    def accept(self, tree_walker, ret=False):
         tree_walker.visit_dec(self)
 
 class If(ASTNode):
@@ -163,7 +177,7 @@ class If(ASTNode):
         if not Type.is_bool(test.type):
             raise TypeError(self.lineno, "Expression inside (...) must return bool!")
     
-    def accept(self, tree_walker):
+    def accept(self, tree_walker, ret=False):
         tree_walker.visit_if(self)
 
 class While(ASTNode):
@@ -175,7 +189,7 @@ class While(ASTNode):
         if not Type.is_bool(test.type):
             raise TypeError(self.lineno, "Expression inside (...) must return bool!")
     
-    def accept(self, tree_walker):
+    def accept(self, tree_walker, ret=False):
         tree_walker.visit_while(self)
 
 class For(ASTNode):
@@ -189,7 +203,7 @@ class For(ASTNode):
         if not Type.is_bool(test.type):
             raise TypeError(self.lineno, "Expression inside (...) must return bool!")
     
-    def accept(self, tree_walker):
+    def accept(self, tree_walker, ret=False):
         tree_walker.visit_for(self)
 
 class DoWhile(ASTNode):
@@ -201,21 +215,21 @@ class DoWhile(ASTNode):
         if not Type.is_bool(test.type):
             raise TypeError(self.lineno, "Expression inside (...) must return bool!")
     
-    def accept(self, tree_walker):
+    def accept(self, tree_walker, ret=False):
         tree_walker.visit_dowhile(self)
 
 class Break(ASTNode):
     def __init__(self):
         super().__init__(Kind.BREAK, None)
     
-    def accept(self, tree_walker):
+    def accept(self, tree_walker, ret=False):
         tree_walker.visit_break(self)
 
 class Continue(ASTNode):
     def __init__(self):
         super().__init__(Kind.CONT, None)
     
-    def accept(self, tree_walker):
+    def accept(self, tree_walker, ret=False):
         tree_walker.visit_cont(self)
 
 class Expression(ASTNode):
@@ -223,7 +237,7 @@ class Expression(ASTNode):
         super().__init__(Kind.EXPR, None)
         self.expr = expr
     
-    def accept(self, tree_walker):
+    def accept(self, tree_walker, ret=False):
         tree_walker.visit_expr(self)
 
 class Print(ASTNode):
@@ -231,7 +245,7 @@ class Print(ASTNode):
         super().__init__(Kind.PRINT, None)
         self.arg = arg
     
-    def accept(self, tree_walker):
+    def accept(self, tree_walker, ret=False):
         tree_walker.visit_print(self)
 
 class Block(ASTNode):
@@ -240,7 +254,7 @@ class Block(ASTNode):
         self.prev_blk = prev_blk
         self.stmt = stmt
     
-    def accept(self, tree_walker):
+    def accept(self, tree_walker, ret=False):
         tree_walker.visit_blk(self)
 
 class Program(ASTNode):
@@ -248,5 +262,5 @@ class Program(ASTNode):
         super().__init__(Kind.PRGM, None)
         self.block = block
     
-    def accept(self, tree_walker):
+    def accept(self, tree_walker, ret=False):
         tree_walker.visit_prgm(self)
