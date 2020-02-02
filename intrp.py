@@ -5,24 +5,40 @@ from scope import Scope
 from treewalker import TreeWalker
 from type import Type
 
+class ChainedList(object):
+    def __init__(self, prev):
+        self.prev = prev
+        self.data = []
+    
+    def append(self, elm):
+        self.data.append(elm)
+    
+    def elm_exists(self, elm):
+        return elm in self.data
+
 class ActivationRecord(object):
     def __init__(self):
-        self.mmap = Scope(None) # memory map
+        self.mmap = None # memory map
+        self.cl = None
     
     def new_scope(self):
         self.mmap = Scope(self.mmap)
+        self.cl = ChainedList(self.cl)
     
     def old_scope(self):
         for key in self.mmap.dct.keys():
-            if not self.mmap.lookup_local(key):
+            if not self.cl.elm_exists(key):
                 self.mmap.parent[key] = self.mmap[key]
         
         self.mmap = self.mmap.parent
+        self.cl = self.cl.prev
     
     def __getitem__(self, key):
         return self.mmap[key]
     
-    def __setitem__(self, key, value):
+    def put(self, key, value, new=False):
+        if new:
+            self.cl.append(key)
         self.mmap[key] = value
 
 class CallStack(object):
@@ -127,7 +143,7 @@ class Interpreter(TreeWalker):
     def visit_decl(self, decl):
         ar = self.stk.top()
         from defaultvals import Default
-        ar[decl.ident.value] = Default.default_value(decl.ident.type)
+        ar.put(decl.ident.value, Default.default_value(decl.ident.type), True)
         return decl.ident
     
     def visit_assign(self, assign):
@@ -135,17 +151,19 @@ class Interpreter(TreeWalker):
         if isinstance(ident, Declaration):
             ident = ident.accept(self)
         ar = self.stk.top()
-        ar[ident.value] = assign.expr.accept(self)
+        ar.put(ident.value, assign.expr.accept(self))
     
     def visit_inc(self, inc):
         ident = inc.ident
         ar = self.stk.top()
-        ar[ident.value] += inc.expr.accept(self)
+        val = ar[ident.value]
+        ar.put(ident.value, val + inc.expr.accept(self))
     
     def visit_dec(self, dec):
         ident = dec.ident
         ar = self.stk.top()
-        ar[ident.value] -= dec.expr.accept(self)
+        val = ar[ident.value]
+        ar.put(ident.value, val - dec.expr.accept(self))
     
     def visit_if(self, if_):
         if if_.test.accept(self):
@@ -233,7 +251,7 @@ class Interpreter(TreeWalker):
     def visit_scan(self, scan):
         ident = scan.ident
         ar = self.stk.top()
-        ar[ident.value] = input()
+        ar.put(ident.value, input())
     
     def visit_blk(self, blk):
         if blk.prev_blk is not None:
@@ -249,5 +267,7 @@ class Interpreter(TreeWalker):
     
     def visit_prgm(self, prgm):
         self.stk.push(ActivationRecord()) # push the topmost activation record
+        self.stk.top().new_scope()
         prgm.block.accept(self)
+        self.stk.top().old_scope()
         self.stk.pop()

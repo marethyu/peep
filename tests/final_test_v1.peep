@@ -32,25 +32,26 @@
     
     z = 5 * -(1 + 2);
     
+    print(z);
+    
     while (z < 0) {
         print("Yah");
         z += 1;
     }
     
     print(z);
-    // problem with i here...
+    z += 1;
+    
     int i = 0;
     
     while (i < 10) {
         bool b = i == 5;
-        
         print(i);
-        
         if (b) {
             break;
         }
         
-        i += 1;
+        i += z;
     }
     
     print(i);
@@ -140,10 +141,20 @@
     
     {
         int w = 20;
+        
+        {
+            {
+                {
+                    w = 30;
+                }
+            }
+        }
+        
         print(w);
     }
     
     print(w);
     
-    // test scan...
+    scan(w);
+    print(w);
 }
