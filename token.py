@@ -27,21 +27,25 @@ class TokenTag(enum.Enum):
     RBRACK = 16
     SEMICOLON = 17
     ASSIGN = 18
-    REL_OP = 19 # ==, !=, <, >, <=, >=
-    ADD_OP = 20 # +, -, ||
-    OP = 21 # *, /, %, &&
-    UNARY_OP = 22 # +, -, !
+    
+    OR = 19 # ||
+    AND = 20 # &&
+    EQ_OP = 21 # ==, !=
+    REL_OP = 22 # <, >, <=, >=
+    ADD_OP = 23 # +, -
+    MUL_OP = 24 # *, /, %
+    UNARY_OP = 25 # +, -, !
     
     # Other tokens
-    IDENT = 23
-    INT_CONST = 24
-    RL_CONST = 25
-    PLUS_EQ = 26 # +=
-    MINUS_EQ = 27 # -=
-    TRUE = 28
-    FALSE = 29
-    STR_LITERAL = 30
-    EOF = 31
+    IDENT = 26
+    INT_CONST = 27
+    RL_CONST = 28
+    PLUS_EQ = 29 # +=
+    MINUS_EQ = 30 # -=
+    TRUE = 31
+    FALSE = 32
+    STR_LITERAL = 33
+    EOF = 34
 
 class Token(object):
     def __init__(self, tag, lexeme, lineno):

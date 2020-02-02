@@ -1,18 +1,19 @@
-{
-    int x = 10;
+{ // a
+    int x = 10; // b
+    // c
     float y = 3.141;
     bool b = true;
     string s;
     
     s = "Hah!";
     
-    if (x == 11) {
-        print(100);
+    if (x == 11) { // d
+        print(100); // e
     } else {
         print(50);
         
         {
-            for (int i = 0; i < 10; i += 1) {
+            for (int i = 0; i < 10; i += 1) { // f
                 print(i);
             }
         }
@@ -21,6 +22,7 @@
     if (!b) {
         print("Yuh");
     } else if (s == "fart") {
+        // g
         print("Shit");
     } else {
         print("Hm");
@@ -36,22 +38,94 @@
     }
     
     print(z);
-    
+    // problem with i here...
     int i = 0;
     
-//  while (i < 10) {
-//      bool b = i == 5;
-//      
-//      if (b) {
+    while (i < 10) {
+        bool b = i == 5;
+        
+        print(i);
+        
+        if (b) {
             break;
-//      }
-//  }
+        }
+        
+        i += 1;
+    }
     
     print(i);
     
     i -= 2;
     
     print(i);
+    
+    print("sha");
+    
+    for (int k = 1; k <= 10; k += 1) {
+        if (k % 2 == 1) {
+            continue;
+        }
+        
+        print(k);
+    }
+    
+    print("sha");
+    
+    print(101);
+    
+    for (int counter = 1; counter <= 5; counter += 1) {
+        if (counter % 2 == 1) {
+            if (counter - 5 == 0) {
+                if (counter == 5) {
+                    break;
+                }
+                
+                print("a");
+            }
+            
+            print("b");
+        }
+        
+        print("c");
+    }
+    
+    print(101);
+    
+    while (true) {
+        print(i);
+        
+        i += 3;
+        
+        if (i == 10) {
+            continue;
+        } else if (i > 20) {
+            break;
+        }
+        
+        print("doh");
+    }
+    
+    for (int mycounter = 0; mycounter <= 10; mycounter += 2) {
+        print("begin");
+        
+        for (int i = 0; i < 100; i += 1) {
+            print(i);
+            
+            if (i == 4) {
+                break;
+            }
+        }
+        
+        for (int i = 0; i < 10; i += 1) {
+            if (i == 2 || i == 4 || i == 6 || i == 9) {
+                continue;
+            }
+            
+            print(i);
+        }
+        
+        print("end");
+    }
     
     int j = 0;
     
@@ -70,4 +144,6 @@
     }
     
     print(w);
+    
+    // test scan...
 }

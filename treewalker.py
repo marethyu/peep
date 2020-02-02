@@ -13,6 +13,18 @@ class TreeWalker(ABC):
         pass
     
     @abstractmethod
+    def visit_orop(self, orop):
+        pass
+    
+    @abstractmethod
+    def visit_andop(self, andop):
+        pass
+    
+    @abstractmethod
+    def visit_eqop(self, eqop):
+        pass
+    
+    @abstractmethod
     def visit_relop(self, relop):
         pass
     
@@ -21,7 +33,7 @@ class TreeWalker(ABC):
         pass
     
     @abstractmethod
-    def visit_op(self, op):
+    def visit_mulop(self, mulop):
         pass
     
     @abstractmethod
@@ -74,6 +86,10 @@ class TreeWalker(ABC):
     
     @abstractmethod
     def visit_print(self, print_):
+        pass
+    
+    @abstractmethod
+    def visit_scan(self, scan):
         pass
     
     @abstractmethod

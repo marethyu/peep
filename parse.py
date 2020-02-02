@@ -1,106 +1,15 @@
 from ast import *
-from err import DuplicateIdentError, UndeclaredIdentError, SyntaxError
+from err import ParseError, DuplicateIdentError, UndeclaredIdentError, SyntaxError
+from scope import Scope
 from token import TokenTag as Tag
 from type import Type
 
-class Scope(object):
-    def __init__(self, parent):
-        self.parent = parent
-        self.symtab = {}
-    
-    # parameter symb is identifier's name
-    def put(self, symb, ident):
-        self.symtab[symb] = ident
-    
-    def lookup_local(self, symb):
-        return self.symtab.get(symb)
-    
-    def lookup(self, symb):
-        scope = self
-        
-        while scope is not None:
-            entry = scope.symtab.get(symb)
-            
-            if entry is not None:
-                return entry
-            
-            scope = scope.parent
-        
-        return None
-
 class Parser(object):
-    """EBNF for Peep programming language
-    
-    <program> ::= <block>
-    <block> ::= "{" { <statement> } "}"
-    <statement> ::= "if" <paren_expression> <block> [ [ "else" "if" <paren_expression> <block> ] "else" <block> ] |
-                    "while" <paren_expression> <block> |
-                    "for" "(" <declare_assign> ";" <expression> ";" <assignment> | <increment> | <decrement> ")" <block> |
-                    "do" <block> "while" <paren_expression> ";" |
-                    "break" |
-                    "continue" |
-                    <block> |
-                    <declaration> ";" |
-                    <declare_assign> ";" |
-                    <assignment> ";" |
-                    <expression> ";" |
-                    <increment> ";" |
-                    <decrement> ";" |
-                    "print" <paren_expression> ";" |
-                    ";"
-    <assignment> ::= <identifier> "=" <expression>
-    <declare_assign> ::= <declaration> "=" <expression>
-    <declaration> ::= <builtin_type> <identifier>
-    <increment> ::= <identifier> "+=" <expression>
-    <decrement> ::= <identifier> "-=" <expression>
-    <paren_expression> ::= "(" <expression> ")"
-    <expression> ::= <simple_expression> [ <relational_op> <simple_expression> ]
-    <simple_expression> ::= <term> [ <addictive_op> <term> ]
-    <term> ::= <factor> [ <op> <factor> ]
-    <factor> ::= [ <unary_op> ] <int_constant> |
-                 [ <unary_op> ] <real_constant> |
-                 [ <unary_op> ] <bool_const> |
-                 [ <unary_op> ] <paren_expression> |
-                 [ <unary_op> ] <identifier> |
-                 <string_literal>
-    <identifier> ::= <alpha> [ <alpha_num> ]
-    <builtin_type> ::= "int" | "float" | "bool" | "string"
-    <relational_op> ::= "==" | "!=" | "<" | ">" | "<=" | ">="
-    <addictive_op> ::= "+" | "-" | "||"
-    <op> ::= "*" | "/" | "%" | "&&"
-    <unary_op> ::= "+" | "-" | "!"
-    <int_constant> ::= <digit> [ <digit> ]
-    <real_constant> ::= <int_constant> "." <digit> [ <digit> ]
-    <bool_const> ::= "true" | "false"
-    <string_literal> ::= "\"" <character> [ <character> ] "\""
-    <digit> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
-    <alpha> ::= "a" | "b" | "c" | "d" | "e" | ... | "z"
-    <alpha_num> ::= <digit> | <alpha>
-    <character> ::= <alpha_num> | "\" <escape_seq>
-    <escape_seq> ::= "n" | "t" | "\"" | "'" | "\" | "a" | "b" | "f" | "r" | "v"
-    
-    ********************************************************************************
-    
-    IMPORTANT: PLEASE START SMALL!
-    
-    Next steps (not necessary in order):
-    - Global variables
-    - Command line arguments
-    - Generalize for statement
-    - Functions
-    - Builtin functions
-    - Variable references
-    - Casting
-    - Arrays
-    - Modules
-    - Classes
-    - Make language loosenly typed (take PHP for example)
-    """
-    
     def __init__(self, lexer):
         self.lexer = lexer
-        self.env = None
+        self.symtab = None
         self.look = None
+        self.in_loop = False
         self._move()
     
     def parse(self):
@@ -117,7 +26,7 @@ class Parser(object):
         """<block> ::= "{" { <statement> } "}"""
         node = None
         
-        self.env = Scope(self.env)
+        self.symtab = Scope(self.symtab)
         self._match(Tag.LBRACK)
         
         while self.look.tag is not Tag.RBRACK:
@@ -125,7 +34,7 @@ class Parser(object):
             node = Block(prev_blk, self._statement())
         
         self._match(Tag.RBRACK)
-        self.env = self.env.parent
+        self.symtab = self.symtab.parent
         
         return node
     
@@ -164,8 +73,13 @@ class Parser(object):
                     break
         elif self.look.tag is Tag.WHILE:
             self._match(Tag.WHILE)
+            self.in_loop = True
             node = While(self._paren_expr(), self._block())
+            self.in_loop = False
         elif self.look.tag is Tag.FOR:
+            # we're doing this early because we want the initialization statement to be inside a for-loop scope not the scope outside the loop
+            self.symtab = Scope(self.symtab)
+            
             init = None
             test = None
             stmt = None
@@ -190,19 +104,36 @@ class Parser(object):
                 raise SyntaxError(self.look.tag, self.look.lineno)
             
             self._match(Tag.RPAREN)
+            self.in_loop = True
+            self._match(Tag.LBRACK)
             
-            node = For(init, test, stmt, self._block())
+            block_node = None
+            
+            while self.look.tag is not Tag.RBRACK:
+                prev_blk = block_node
+                block_node = Block(prev_blk, self._statement())
+            
+            self._match(Tag.RBRACK)
+            node = For(init, test, stmt, block_node)
+            self.in_loop = False
+            self.symtab = self.symtab.parent
         elif self.look.tag is Tag.DO:
             self._match(Tag.DO)
+            self.in_loop = True
             block = self._block()
+            self.in_loop = False
             self._match(Tag.WHILE)
             node = DoWhile(block, self._paren_expr())
             self._match(Tag.SEMICOLON)
         elif self.look.tag is Tag.BREAK:
+            if not self.in_loop:
+                raise ParseError("break outside of a loop!", self.look.lineno)
             self._match(Tag.BREAK)
             node = Break()
             self._match(Tag.SEMICOLON)
         elif self.look.tag is Tag.CONTINUE:
+            if not self.in_loop:
+                raise ParseError("continue outside of a loop!")
             self._match(Tag.CONTINUE)
             node = Continue()
             self._match(Tag.SEMICOLON)
@@ -227,8 +158,15 @@ class Parser(object):
             self._match(Tag.PRINT)
             node = Print(self._paren_expr())
             self._match(Tag.SEMICOLON)
+        elif self.look.tag is Tag.SCAN:
+            self._match(Tag.SCAN)
+            self._match(Tag.LPAREN)
+            node = Scan(self._check_ident())
+            self._match(Tag.RPAREN)
+            self._match(Tag.SEMICOLON)
         else: # expression
             node = self._expr()
+            self._match(Tag.SEMICOLON)
         
         return node
     
@@ -260,9 +198,9 @@ class Parser(object):
         ident = Identifier(type, self.look.lexeme)
         
         # the new identifier must not exist in local scope
-        if self.env.lookup_local(self.look.lexeme) is not None:
+        if self.symtab.lookup_local(self.look.lexeme) is not None:
             raise DuplicateIdentError(self.look.lexeme, self.look.lineno)
-        self.env.put(self.look.lexeme, ident)
+        self.symtab[self.look.lexeme] = ident
         
         self._match(Tag.IDENT)
         
@@ -296,35 +234,66 @@ class Parser(object):
         return node
     
     def _expr(self):
-        """<expression> ::= <simple_expression> [ <relational_op> <simple_expression> ]"""
-        expr = self._simple_expr()
+        """<expression> ::= <or_operand> [ "||" <or_operand> ]"""
+        expr = self._or_operand()
+        
+        while self.look.tag is Tag.OR:
+            self._match(Tag.OR)
+            expr = OrOp(expr, self._or_operand())
+        
+        return expr
+    
+    def _or_operand(self):
+        """<or_operand> ::= <and_operand> [ "&&" <and_operand> ]"""
+        or_operand = self._and_operand()
+        
+        while self.look.tag is Tag.AND:
+            self._match(Tag.AND)
+            or_operand = AndOp(or_operand, self._and_operand())
+        
+        return or_operand
+    
+    def _and_operand(self):
+        """<and_operand> ::= <equality_operand> [ <equality_op> <equality_operand> ]"""
+        and_operand = self._eq_operand()
+        
+        while self.look.tag is Tag.EQ_OP:
+            op = self.look.lexeme
+            self._match(Tag.EQ_OP)
+            and_operand = EqualityOp(and_operand, self._eq_operand(), op)
+        
+        return and_operand
+    
+    def _eq_operand(self):
+        """<equality_operand> ::= <simple_expression> [ <relational_op> <simple_expression> ]"""
+        eq_operand = self._simple_expr()
         
         while self.look.tag is Tag.REL_OP:
             op = self.look.lexeme
             self._match(Tag.REL_OP)
-            expr = RelationalOp(expr, self._simple_expr(), op)
+            eq_operand = RelationalOp(eq_operand, self._simple_expr(), op)
         
-        return expr
+        return eq_operand
     
     def _simple_expr(self):
         """<simple_expression> ::= <term> [ <addictive_op> <term> ]"""
-        sim_expr = self._term()
+        simpl_expr = self._term()
         
         while self.look.tag is Tag.ADD_OP:
             op = self.look.lexeme
             self._match(Tag.ADD_OP)
-            sim_expr = AddictiveOp(sim_expr, self._term(), op)
+            simpl_expr = AddictiveOp(simpl_expr, self._term(), op)
         
-        return sim_expr
+        return simpl_expr
     
     def _term(self):
-        """<term> ::= <factor> [ <op> <factor> ]"""
+        """<term> ::= <factor> [ <multiplicative_op> <factor> ]"""
         term = self._factor()
         
-        while self.look.tag is Tag.OP:
+        while self.look.tag is Tag.MUL_OP:
             op = self.look.lexeme
-            self._match(Tag.OP)
-            term = Operator(term, self._factor(), op)
+            self._match(Tag.MUL_OP)
+            term = MultiplicativeOp(term, self._factor(), op)
         
         return term
     
@@ -369,7 +338,7 @@ class Parser(object):
         symb = self.look.lexeme
         
         self._match(Tag.IDENT)
-        ident = self.env.lookup(symb)
+        ident = self.symtab[symb]
         
         if ident is None:
             raise UndeclaredIdentError(symb, self.look.lineno)

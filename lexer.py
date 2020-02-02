@@ -24,9 +24,13 @@ class Lexer(object):
         if self.current == '/':
             peek = self._peek()
             
-            if peek is not None and peek == '/':
-                self._eat_comment()
-                return self.next_token()
+            if peek is not None:
+                if peek == '/':
+                    self._eat_comment()
+                    return self.next_token()
+                elif peek == '*':
+                    self._eat_multiline_comment()
+                    return self.next_token()
         
         if self.current.isdigit():
             return self._make_num_tok()
@@ -53,7 +57,7 @@ class Lexer(object):
             self._next_ch()
             
             if self.current is not None and self.current == '=':
-                return self._make_token(TokenTag.REL_OP, '==')
+                return self._make_token(TokenTag.EQ_OP, '==')
             
             self.prev_tag = TokenTag.ASSIGN
             return Token(TokenTag.ASSIGN, '=', lineno)
@@ -65,7 +69,7 @@ class Lexer(object):
             if (peek is not None and
                 op in ['+', '-'] and
                 (peek == '(' or peek.isalnum()) and
-                self.prev_tag in [None, TokenTag.ASSIGN, TokenTag.LPAREN, TokenTag.REL_OP, TokenTag.ADD_OP, TokenTag.OP]):
+                self.prev_tag in [None, TokenTag.ASSIGN, TokenTag.LPAREN, TokenTag.REL_OP, TokenTag.ADD_OP, TokenTag.MUL_OP]):
                 return self._make_token(TokenTag.UNARY_OP, op)
             
             if (peek is not None and
@@ -76,13 +80,13 @@ class Lexer(object):
             if op in ['+', '-']:
                 return self._make_token(TokenTag.ADD_OP, op)
             
-            return self._make_token(TokenTag.OP, op)
+            return self._make_token(TokenTag.MUL_OP, op)
         
         if self.current == '!':
             self._next_ch()
             
             if self.current is not None and self.current == '=':
-                return self._make_token(TokenTag.REL_OP, '!=')
+                return self._make_token(TokenTag.EQ_OP, '!=')
             
             self.prev_tag = TokenTag.UNARY_OP
             return Token(TokenTag.UNARY_OP, '!', lineno)
@@ -92,14 +96,14 @@ class Lexer(object):
             
             if peek is not None and peek == '&':
                 self._next_ch() # eat '&'
-                return self._make_token(TokenTag.OP, '&&')
+                return self._make_token(TokenTag.AND, '&&')
         
         if self.current == '|':
             peek = self._peek()
             
             if peek is not None and peek == '|':
                 self._next_ch() # eat '|'
-                return self._make_token(TokenTag.ADD_OP, '||')
+                return self._make_token(TokenTag.OR, '||')
         
         if self.current == '<':
             self._next_ch()
@@ -177,6 +181,27 @@ class Lexer(object):
         
         self.prev_tag = TokenTag.INT_CONST
         return Token(TokenTag.INT_CONST, num, lineno)
+    
+    def _eat_multiline_comment(self):
+        # consume "/*"
+        self._next_ch()
+        self._next_ch()
+        
+        while True:
+            while self.current is not None and self.current != '*':
+                self._next_ch()
+            
+            if self.current is None:
+                from err import LexError
+                raise LexError("A multi-line comment doesn't end with '*/'!", lineno)
+            elif self._peek() == '/':
+                # consume closing "*/"
+                self._next_ch()
+                self._next_ch()
+                break
+            else: # self._peek() != '/' (oops...)
+                self._next_ch()
+                # then continue the loop...
     
     def _eat_comment(self):
         # consume "//"

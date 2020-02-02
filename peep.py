@@ -19,7 +19,8 @@ def get_file(filename):
     except FileNotFoundError:
         print("That file does not exist!")
         sys.exit(1)
-    return file
+    finally:
+        return file
 
 def c(file):
     pass
@@ -38,7 +39,7 @@ def help():
     print("Usage: python peep.py [options] insert_file_name_here.peep\nOptions:")
     
     for k, v in all_options.items():
-        print(' ' + k + ' ' * (16 - len(k)) + v)
+        print(' ' + k + ' ' * (14 - len(k)) + v)
     
     print("\nNote: You can't use options '-c' and '-i' at the same time")
 
