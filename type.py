@@ -17,7 +17,11 @@ class Type(enum.Enum):
     def is_type_ok(op_type, op, is_unary=False):
         """Precondition (for binary expressions): Type.check_match is called beforehand"""
         
-        if op == '==':
+        if op == '+=':
+            return op_type in [Type.INT, Type.FLOAT, Type.STRING]
+        elif op == '-=':
+            return op_type in [Type.INT, Type.FLOAT]
+        elif op == '==':
             return op_type in [Type.INT, Type.FLOAT, Type.BOOL, Type.STRING]
         elif op == '!=':
             return op_type in [Type.INT, Type.FLOAT, Type.BOOL, Type.STRING]

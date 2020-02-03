@@ -1,6 +1,5 @@
-# TODO: Runtime errors, what to do when there's nothing inside block?
-
 from ast import Block, Declaration
+from err import DivisionByZeroError, InputCastingError, raise_runtime_error
 from scope import Scope
 from treewalker import TreeWalker
 from type import Type
@@ -17,7 +16,10 @@ class ChainedList(object):
         return elm in self.data
 
 class ActivationRecord(object):
-    def __init__(self):
+    def __init__(self, filename, current_function, last_lineno):
+        self.filename = filename
+        self.current_function = current_function
+        self.last_lineno = last_lineno
         self.mmap = None # memory map
         self.cl = None
     
@@ -63,7 +65,10 @@ class Interpreter(TreeWalker):
     
     def interpret(self):
         if self.tree is not None:
-            self.tree.accept(self)
+            try:
+                self.tree.accept(self)
+            except KeyboardInterrupt:
+                pass
     
     def visit_ident(self, ident):
         ar = self.stk.top()
@@ -124,9 +129,18 @@ class Interpreter(TreeWalker):
             type = mulop.left.type
             
             if type == Type.INT:
-                return mulop.left.accept(self) // mulop.right.accept(self)
+                right = mulop.right.accept(self)
+                if right == 0:
+                    self.stk.top().last_lineno = mulop.right.lineno
+                    raise_runtime_error(DivisionByZeroError(mulop.right.lineno), self.stk)
+                return mulop.left.accept(self) // right
             
-            return mulop.left.accept(self) / mulop.right.accept(self)
+            right = mulop.right.accept(self)
+            import sys, math
+            if math.abs(right - 0.0) < sys.float_info.epsilon: # right == 0.0
+                self.stk.top().last_lineno = mulop.right.lineno
+                raise_runtime_error(DivisionByZeroError(mulop.right.lineno), self.stk)
+            return mulop.left.accept(self) / right
         else: # op == "%"
             return mulop.left.accept(self) % mulop.right.accept(self)
     
@@ -168,29 +182,35 @@ class Interpreter(TreeWalker):
     def visit_if(self, if_):
         if if_.test.accept(self):
             self.stk.top().new_scope()
-            if_.block.accept(self)
+            if if_.block is not None:
+                if_.block.accept(self)
             self.stk.top().old_scope()
         elif len(if_.brs) > 0:
             if len(if_.brs) == 1:
                 self.stk.top().new_scope()
-                if_.brs[-1].accept(self)
+                if if_.brs[-1] is not None:
+                    if_.brs[-1].accept(self)
                 self.stk.top().old_scope()
             else:
                 for i in range(0, len(if_.brs) - 1):
                     if if_.brs[i].test.accept(self):
                         self.stk.top().new_scope()
-                        if_.brs[i].block.accept(self)
+                        if if_.brs[i].block is not None:
+                            if_.brs[i].block.accept(self)
                         self.stk.top().old_scope()
                         break
                 else:
                     self.stk.top().new_scope()
-                    if_.brs[-1].accept(self)
+                    if if_.brs[-1] is not None:
+                        if_.brs[-1].accept(self)
                     self.stk.top().old_scope()
     
     def visit_while(self, while_):
         self.stk.top().new_scope()
+        
         while while_.test.accept(self):
-            while_.block.accept(self)
+            if while_.block is not None:
+                while_.block.accept(self)
             
             if self.encountered_break:
                 break
@@ -206,7 +226,8 @@ class Interpreter(TreeWalker):
         for_.init.accept(self)
         
         while for_.test.accept(self):
-            for_.block.accept(self)
+            if for_.block is not None:
+                for_.block.accept(self)
             
             if self.encountered_break:
                 break
@@ -221,8 +242,10 @@ class Interpreter(TreeWalker):
     
     def visit_dowhile(self, dowhile):
         self.stk.top().new_scope()
+        
         while True:
-            dowhile.block.accept(self)
+            if dowhile.block is not None:
+                dowhile.block.accept(self)
             
             if self.encountered_break:
                 break
@@ -245,18 +268,47 @@ class Interpreter(TreeWalker):
     def visit_expr(self, expr):
         expr.expr.accept(self)
     
-    def visit_print(self, print_): # todo: make print function more specialized for Peep, don't exploit Python's print (ie. instead of printing True by default, print true instead)
-        print(print_.arg.accept(self))
+    def visit_print(self, print_):
+        out = print_.arg.accept(self)
+        
+        # we don't want to exploit Python's built-in print
+        # function too much so a little modification is made
+        if type(out) == bool:
+            print("true" if out else "false")
+        else:
+            print(out)
     
     def visit_scan(self, scan):
         ident = scan.ident
+        inp = input()
         ar = self.stk.top()
-        ar.put(ident.value, input())
+        
+        if ident.type == Type.INT:
+            try:
+                ar.put(ident.value, int(inp))
+            except ValueError:
+                self.stk.top().last_lineno = ident.lineno
+                raise_runtime_error(InputCastingError("Cannot cast input to int", ident.lineno), self.stk)
+        elif ident.type == Type.FLOAT:
+            try:
+                ar.put(ident.value, float(inp))
+            except ValueError:
+                self.stk.top().last_lineno = ident.lineno
+                raise_runtime_error(InputCastingError("Cannot cast input to float", ident.lineno), self.stk)
+        elif ident.type == Type.BOOL:
+            if inp not in ['true', 'false']:
+                self.stk.top().last_lineno = ident.lineno
+                raise_runtime_error(InputCastingError("Cannot cast input to bool", ident.lineno), self.stk)
+            ar.put(ident.value, inp == "true")
+        else: # ident.type == Type.STRING
+            ar.put(ident.value, inp)
     
     def visit_blk(self, blk):
         if blk.prev_blk is not None:
             blk.prev_blk.accept(self)
         if self.encountered_break or self.encountered_cont:
+            return
+        if blk.stmt is None:
             return
         if isinstance(blk.stmt, Block):
             self.stk.top().new_scope()
@@ -266,8 +318,10 @@ class Interpreter(TreeWalker):
             blk.stmt.accept(self)
     
     def visit_prgm(self, prgm):
-        self.stk.push(ActivationRecord()) # push the topmost activation record
-        self.stk.top().new_scope()
-        prgm.block.accept(self)
-        self.stk.top().old_scope()
+        import util
+        self.stk.push(ActivationRecord(util.filename, "__MAIN", 0)) # push the topmost activation record
+        if prgm.block is not None:
+            self.stk.top().new_scope()
+            prgm.block.accept(self)
+            self.stk.top().old_scope()
         self.stk.pop()

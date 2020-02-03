@@ -1,3 +1,4 @@
+from err import LexError, raise_error
 from token import TokenTag, Token
 
 # global variable
@@ -7,6 +8,10 @@ class Lexer(object):
     def __init__(self, file):
         self.prgm = file.read()
         self.prgm_len = len(self.prgm)
+        
+        if self.prgm_len == 0:
+            raise_error(LexError("The program is empty!", 0))
+        
         self.idx = 0
         self.current = self.prgm[self.idx]
         self.prev_tag = None # for detection of unary operators
@@ -135,8 +140,7 @@ class Lexer(object):
             
             return self._make_token(TokenTag.STR_LITERAL, str)
         
-        from err import LexError
-        raise LexError("Unknown token {}".format(self.current), lineno)
+        raise_error(LexError("Unknown token {}".format(self.current), lineno))
     
     def _make_token(self, tag, lexeme, skip_twice=False):
         self._next_ch()
@@ -192,8 +196,7 @@ class Lexer(object):
                 self._next_ch()
             
             if self.current is None:
-                from err import LexError
-                raise LexError("A multi-line comment doesn't end with '*/'!", lineno)
+                raise_error(LexError("A multi-line comment doesn't end with '*/'!", lineno))
             elif self._peek() == '/':
                 # consume closing "*/"
                 self._next_ch()

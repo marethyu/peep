@@ -1,0 +1,45 @@
+# Builtin types
+INT                           "int"
+FLOAT                         "float"
+BOOL                          "bool"
+STRING                        "string"
+
+# Instruction words
+IF                            "if"
+ELSE                          "else"
+WHILE                         "while"
+FOR                           "for"
+DO                            "do"
+BREAK                         "break"
+CONTINUE                      "continue"
+
+# Builtin functions
+PRINT                         "print"
+SCAN                          "scan"
+
+# Single character tokens
+LPAREN                        "("
+RPAREN                        ")"
+LBRACK                        "{"
+RBRACK                        "}"
+SEMICOLON                     ";"
+ASSIGN                        "="
+
+OR                            "||"
+AND                           "&&"
+EQ_OP                         "==" | "!="
+REL_OP                        "<" | ">" | "<=" | ">="
+ADD_OP                        "+" | "-"
+MUL_OP                        "*" | "/" | "%"
+UNARY_OP                      "+" | "-" | "!"
+
+# Other tokens
+IDENT
+INT_CONST
+RL_CONST
+PLUS_EQ                       "+="
+MINUS_EQ                      "-="
+TRUE                          "true"
+FALSE                         "false"
+STR_LITERAL
+EOF

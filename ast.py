@@ -1,7 +1,7 @@
 import enum
 
 from abc import ABC, abstractmethod
-from err import TypeError
+from err import TypeError, raise_error
 from type import Type
 
 class Kind(enum.Enum):
@@ -70,22 +70,22 @@ class BinaryOp(ASTNode):
         self.op = op
         
         if not Type.check_match(left.type, right.type):
-            raise TypeError(self.lineno, "Types does not match! (left operand type:{}, right operand type:{})".format(left.type, right.type))
+            raise_error(TypeError(self.lineno, "Types does not match! (left operand type:{}, right operand type:{})".format(left.type, right.type)))
         if not Type.is_type_ok(left.type, op):
-            raise TypeError(self.lineno, "Incompatible types for an operator (left operand type:{}, operator:{})".format(left.type, op))
+            raise_error(TypeError(self.lineno, "Incompatible types for an operator (operand type:{}, operator:{})".format(left.type, op)))
         self.type = Type.combine(left.type, op)
     
     def accept(self, tree_walker):
         pass
 
-class OrOp(BinaryOp):
+class OrOperator(BinaryOp):
     def __init__(self, left, right):
         super().__init__(Kind.OR_OP, left, right, '||')
     
     def accept(self, tree_walker):
         return tree_walker.visit_orop(self)
 
-class AndOp(BinaryOp):
+class AndOperator(BinaryOp):
     def __init__(self, left, right):
         super().__init__(Kind.AND_OP, left, right, '&&')
     
@@ -127,7 +127,7 @@ class UnaryOp(ASTNode):
         self.operand = operand
         
         if not Type.is_type_ok(operand.type, op, is_unary=True):
-            raise TypeError("Incompatible types for an operator! (operand type:{}, operator:{})".format(operand.type, op))
+            raise_error(TypeError("Incompatible types for an operator! (operand type:{}, operator:{})".format(operand.type, op)))
         self.type = Type.combine(operand.type, op)
     
     def accept(self, tree_walker):
@@ -149,7 +149,7 @@ class Assign(ASTNode):
         self.expr = expr
         
         if not Type.check_match(ident.type, expr.type):
-            raise TypeError(self.lineno, "Types does not match!")
+            raise_error(TypeError(self.lineno, "Types does not match! (ident type:{}, expr type:{})".format(ident.type, expr.type)))
     
     def accept(self, tree_walker):
         return tree_walker.visit_assign(self)
@@ -161,7 +161,9 @@ class Increment(ASTNode):
         self.expr = expr
         
         if not Type.check_match(ident.type, expr.type):
-            raise TypeError(self.lineno, "Types does not match!")
+            raise_error(TypeError(self.lineno, "Types does not match! (ident type:{}, expr type:{})".format(ident.type, expr.type)))
+        if not Type.is_type_ok(ident.type, '+='):
+            raise_error(TypeError(self.lineno, "Incompatible types for an operator (type:{}, operator:{})".format(ident.type, '+=')))
     
     def accept(self, tree_walker):
         return tree_walker.visit_inc(self)
@@ -173,7 +175,9 @@ class Decrement(ASTNode):
         self.expr = expr
         
         if not Type.check_match(ident.type, expr.type):
-            raise TypeError(self.lineno, "Types does not match!")
+            raise_error(TypeError(self.lineno, "Types does not match! (ident type:{}, expr type:{})".format(ident.type, expr.type)))
+        if not Type.is_type_ok(ident.type, '-='):
+            raise_error(TypeError(self.lineno, "Incompatible types for an operator (type:{}, operator:{})".format(ident.type, '-=')))
     
     def accept(self, tree_walker):
         return tree_walker.visit_dec(self)
@@ -183,10 +187,12 @@ class If(ASTNode):
         super().__init__(Kind.IF, None)
         self.test = test
         self.block = block
-        self.brs = brs # empty for simple if stmt, contains a element (else branch) for if-else stmt, >1 elements means elif branch (s) preceding a else branch
+        # empty for simple if stmt, contains a element (else branch) for if-else stmt,
+        # >1 elements means elif branch (s) preceding the else branch
+        self.brs = brs
         
         if not Type.is_bool(test.type):
-            raise TypeError(self.lineno, "Expression inside (...) must return bool!")
+            raise_error(TypeError(self.lineno, "Expression inside (...) must return bool! (It returns {} instead)".format(test.type)))
     
     def accept(self, tree_walker):
         return tree_walker.visit_if(self)
@@ -198,7 +204,7 @@ class While(ASTNode):
         self.block = block
         
         if not Type.is_bool(test.type):
-            raise TypeError(self.lineno, "Expression inside (...) must return bool!")
+            raise_error(TypeError(self.lineno, "Expression inside (...) must return bool! (It returns {} instead)".format(test.type)))
     
     def accept(self, tree_walker):
         return tree_walker.visit_while(self)
@@ -212,7 +218,7 @@ class For(ASTNode):
         self.block = block
         
         if not Type.is_bool(test.type):
-            raise TypeError(self.lineno, "Expression inside (...) must return bool!")
+            raise_error(TypeError(self.lineno, "Expression inside (...) must return bool! (It returns {} instead)".format(test.type)))
     
     def accept(self, tree_walker):
         return tree_walker.visit_for(self)
@@ -224,7 +230,7 @@ class DoWhile(ASTNode):
         self.test = test
         
         if not Type.is_bool(test.type):
-            raise TypeError(self.lineno, "Expression inside (...) must return bool!")
+            raise_error(TypeError(self.lineno, "Expression inside (...) must return bool! (It returns {} instead)".format(test.type)))
     
     def accept(self, tree_walker):
         return tree_walker.visit_dowhile(self)

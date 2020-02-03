@@ -1,5 +1,5 @@
 from ast import *
-from err import ParseError, DuplicateIdentError, UndeclaredIdentError, SyntaxError
+from err import DuplicateIdentError, UndeclaredIdentError, SyntaxError, raise_error
 from scope import Scope
 from token import TokenTag as Tag
 from type import Type
@@ -54,6 +54,7 @@ class Parser(object):
                         <increment> ";" |
                         <decrement> ";" |
                         "print" <paren_expression> ";" |
+                        "scan" "(" <identifier> ")"|
                         ";"
         """
         node = None
@@ -77,7 +78,8 @@ class Parser(object):
             node = While(self._paren_expr(), self._block())
             self.in_loop = False
         elif self.look.tag is Tag.FOR:
-            # we're doing this early because we want the initialization statement to be inside a for-loop scope not the scope outside the loop
+            # we're doing this early because we want the initialization statement to
+            # be inside a for-loop scope not the scope outside the loop
             self.symtab = Scope(self.symtab)
             
             init = None
@@ -101,7 +103,7 @@ class Parser(object):
             elif self.look.tag is Tag.MINUS_EQ:
                 stmt = self._dec(ident)
             else:
-                raise SyntaxError(self.look.tag, self.look.lineno)
+                raise_error(SyntaxError("Expected '=', '+=', '-=' but got {} instead!".format(self.look.tag), self.look.lineno))
             
             self._match(Tag.RPAREN)
             self.in_loop = True
@@ -127,13 +129,13 @@ class Parser(object):
             self._match(Tag.SEMICOLON)
         elif self.look.tag is Tag.BREAK:
             if not self.in_loop:
-                raise ParseError("break outside of a loop!", self.look.lineno)
+                raise_error(SyntaxError("break is used outside of a loop!", self.look.lineno))
             self._match(Tag.BREAK)
             node = Break()
             self._match(Tag.SEMICOLON)
         elif self.look.tag is Tag.CONTINUE:
             if not self.in_loop:
-                raise ParseError("continue outside of a loop!")
+                raise_error(SyntaxError("continue is used outside of a loop!", self.look.lineno))
             self._match(Tag.CONTINUE)
             node = Continue()
             self._match(Tag.SEMICOLON)
@@ -151,7 +153,7 @@ class Parser(object):
             elif self.look.tag is Tag.MINUS_EQ:
                 node = self._dec(ident)
             else:
-                raise SyntaxError(self.look.tag, self.look.lineno)
+                raise_error(SyntaxError("Expected '=', '+=', '-=' but got {} instead!".format(self.look.tag), self.look.lineno))
             
             self._match(Tag.SEMICOLON)
         elif self.look.tag is Tag.PRINT:
@@ -164,8 +166,10 @@ class Parser(object):
             node = Scan(self._check_ident())
             self._match(Tag.RPAREN)
             self._match(Tag.SEMICOLON)
+        elif self.look.tag is Tag.SEMICOLON: # empty statement
+            self._match(Tag.SEMICOLON)
         else: # expression
-            node = self._expr()
+            node = Expression(self._expr())
             self._match(Tag.SEMICOLON)
         
         return node
@@ -199,7 +203,7 @@ class Parser(object):
         
         # the new identifier must not exist in local scope
         if self.symtab.lookup_local(self.look.lexeme) is not None:
-            raise DuplicateIdentError(self.look.lexeme, self.look.lineno)
+            raise_error(DuplicateIdentError(self.look.lexeme, self.look.lineno))
         self.symtab[self.look.lexeme] = ident
         
         self._match(Tag.IDENT)
@@ -239,7 +243,7 @@ class Parser(object):
         
         while self.look.tag is Tag.OR:
             self._match(Tag.OR)
-            expr = OrOp(expr, self._or_operand())
+            expr = OrOperator(expr, self._or_operand())
         
         return expr
     
@@ -249,7 +253,7 @@ class Parser(object):
         
         while self.look.tag is Tag.AND:
             self._match(Tag.AND)
-            or_operand = AndOp(or_operand, self._and_operand())
+            or_operand = AndOperator(or_operand, self._and_operand())
         
         return or_operand
     
@@ -332,7 +336,7 @@ class Parser(object):
             self._match(Tag.STR_LITERAL)
             return node
         else:
-            raise SyntaxError(self.look.tag, self.look.lineno)
+            raise_error(SyntaxError("Unexpected token! ({})".format(self.look.tag), self.look.lineno))
     
     def _check_ident(self):
         symb = self.look.lexeme
@@ -341,13 +345,13 @@ class Parser(object):
         ident = self.symtab[symb]
         
         if ident is None:
-            raise UndeclaredIdentError(symb, self.look.lineno)
+            raise_error(UndeclaredIdentError(symb, self.look.lineno))
         
         return ident
     
     def _match(self, tag):
         if self.look.tag is not tag:
-            raise SyntaxError(self.look.tag, self.look.lineno)
+            raise_error(SyntaxError("Expected {} but got {}!".format(tag, self.look.tag), self.look.lineno))
         self._move()
     
     def _move(self):

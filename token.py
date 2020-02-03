@@ -28,20 +28,20 @@ class TokenTag(enum.Enum):
     SEMICOLON = 17
     ASSIGN = 18
     
-    OR = 19 # ||
-    AND = 20 # &&
-    EQ_OP = 21 # ==, !=
-    REL_OP = 22 # <, >, <=, >=
-    ADD_OP = 23 # +, -
-    MUL_OP = 24 # *, /, %
-    UNARY_OP = 25 # +, -, !
+    OR = 19
+    AND = 20
+    EQ_OP = 21
+    REL_OP = 22
+    ADD_OP = 23
+    MUL_OP = 24
+    UNARY_OP = 25
     
     # Other tokens
     IDENT = 26
     INT_CONST = 27
     RL_CONST = 28
-    PLUS_EQ = 29 # +=
-    MINUS_EQ = 30 # -=
+    PLUS_EQ = 29
+    MINUS_EQ = 30
     TRUE = 31
     FALSE = 32
     STR_LITERAL = 33
