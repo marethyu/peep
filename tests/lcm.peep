@@ -1,0 +1,27 @@
+{
+    int a;
+    int b;
+    int maxn;
+    
+    print("Input two numbers:");
+    scan(a); scan(b);
+    
+    if (a > b) {
+        maxn = a;
+    } else {
+        maxn = b;
+    }
+    
+    int lcm = maxn;
+    
+    while (true) {
+        if (lcm % a == 0 && lcm % b == 0) {
+            break;
+        }
+        
+        lcm += maxn;
+    }
+    
+    print("Lowest commom multiple of two numbers are:");
+    print(lcm);
+}
