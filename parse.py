@@ -336,7 +336,7 @@ class Parser(object):
             self._match(Tag.STR_LITERAL)
             return node
         else:
-            raise_error(SyntaxError("Unexpected token! ({})".format(self.look.tag), self.look.lineno))
+            raise_error(SyntaxError("Unexpected token in expression! ({})".format(self.look.tag), self.look.lineno))
     
     def _check_ident(self):
         symb = self.look.lexeme

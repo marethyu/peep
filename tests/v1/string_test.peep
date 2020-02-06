@@ -1,0 +1,19 @@
+{
+    string s1 = "\tHello\tWorld!";
+    
+    print(s1);
+    
+    string s2 = "\g";
+    
+    print(s2);
+    
+    string foo = "foobarbaz";
+    
+    print(foo);
+    
+    string s3 = "abc\xcba";
+    
+    print(s3);
+    
+    print("\tHello\n\tGay!\n");
+}

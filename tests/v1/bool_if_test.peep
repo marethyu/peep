@@ -1,0 +1,53 @@
+{
+    bool b = true;
+    
+    print(b);
+    
+    if (!!b) {
+        print("1");
+    }
+    
+    bool c = false;
+    
+    if (b || (c)) {
+        print(2);
+    }
+    
+    if (b && !c) {
+        print(3);
+    }
+    
+    bool d = true;
+    
+    if (b && d || c) {
+        print("4");
+    }
+    
+    int x = 10;
+    int y = 20;
+    
+    if (x < y) {
+        print(5);
+    }
+    
+    if (x > y) {
+        print(5); // will never reach!
+    } else {
+        print(6);
+    }
+    
+    if (x < y && b && !c) {
+        print(7);
+    }
+    
+    int a = y;
+    int B = x + 1;
+    
+    if (false) {
+        print(7);
+    } else if (B < a) {
+        print(8);
+    } else {
+        print(9);
+    }
+}

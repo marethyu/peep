@@ -1,0 +1,61 @@
+{
+    for (int i = 0; i < 10; i += 1) {
+        print(i);
+    }
+    
+    int n = 1;
+    
+    while (true) {
+        if (n == 10) {
+            break;
+        }
+        
+        if (n % 2 == 0) {
+            n += 1;
+            continue;
+        }
+        
+        print(n);
+        n += 1;
+    }
+    
+    for (int i = 0; i < 5; i += 1) {
+        print("begin");
+        
+        int j;
+        
+        while (j < 5) {
+            if (j % 2 == 0){
+                if (j == 2) {
+                    break;
+                }
+            }
+            
+            j += 1;
+        }
+        
+        print(j);
+        
+        for (int j = 0; j < 10; j += 1) {
+            if (j == 0 || j == 1) {
+                continue;
+            }
+            
+            print(j);
+        }
+        
+        print("end");
+    }
+    
+    int x = 1;
+    
+    do {
+        if (x % 2 == 1) {
+            x += 1;
+            continue;
+        }
+        
+        print(x);
+        x += 1;
+    } while (x <= 10);
+}

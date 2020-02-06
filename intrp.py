@@ -137,7 +137,7 @@ class Interpreter(TreeWalker):
             
             right = mulop.right.accept(self)
             import sys, math
-            if math.abs(right - 0.0) < sys.float_info.epsilon: # right == 0.0
+            if math.fabs(right - 0.0) < sys.float_info.epsilon: # right == 0.0
                 self.stk.top().last_lineno = mulop.right.lineno
                 raise_runtime_error(DivisionByZeroError(mulop.right.lineno), self.stk)
             return mulop.left.accept(self) / right
@@ -319,7 +319,10 @@ class Interpreter(TreeWalker):
     
     def visit_prgm(self, prgm):
         import util
-        self.stk.push(ActivationRecord(util.filename, "__MAIN", 0)) # push the topmost activation record
+        filename = util.filename
+        if filename.find('/') != -1:
+            filename = filename[filename.rfind('/') + 1:] # remove directory prefix
+        self.stk.push(ActivationRecord(filename, "__MAIN", 0)) # push the topmost activation record
         if prgm.block is not None:
             self.stk.top().new_scope()
             prgm.block.accept(self)

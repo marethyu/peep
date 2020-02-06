@@ -1,8 +1,8 @@
 # Peep
 
 TODO:
-- more test cases
 - make readme file look better
+- add change log
 
 IMPORTANT: PLEASE START SMALL!
 
@@ -18,3 +18,4 @@ Next steps (not necessary in order):
 - Modules
 - Classes
 - Debugger
+- Codegen

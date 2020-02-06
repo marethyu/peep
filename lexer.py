@@ -138,6 +138,45 @@ class Lexer(object):
                 str += self.current
                 self._next_ch()
             
+            # handle escape sequences
+            s = str
+            prev = None
+            str = ""
+            
+            for i in range(len(s)):
+                if prev is None:
+                    prev = s[i]
+                elif prev == '\\':
+                    ch = s[i]
+                    prev = None
+                    
+                    if ch == 'n':
+                        str += '\n'
+                    elif ch == 't':
+                        str += '\t'
+                    elif ch == 'v':
+                        str += '\v'
+                    elif ch == 'b':
+                        str += '\b'
+                    elif ch == 'f':
+                        str += '\f'
+                    elif ch == 'a':
+                        str += '\a'
+                    elif ch == '\\':
+                        str += '\\'
+                    elif ch == '"':
+                        str += '\"'
+                    elif ch == '\'':
+                        str += '\''
+                    else: # unknown escape sequence
+                        str += '\\' + ch
+                else:
+                    str += prev
+                    prev = s[i]
+            
+            if prev is not None:
+                str += prev
+            
             return self._make_token(TokenTag.STR_LITERAL, str)
         
         raise_error(LexError("Unknown token {}".format(self.current), lineno))

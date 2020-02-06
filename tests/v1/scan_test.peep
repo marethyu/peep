@@ -1,0 +1,30 @@
+// scan test
+{
+    int w;
+    scan(w);
+    w += 1;
+    print(w);
+    
+    float x = 3.14;
+    scan(x);
+    x -= 0.5;
+    print(x);
+    
+    bool y;
+    scan(y);
+    if (y) {
+        print("1");
+    } else {
+        print("0");
+    }
+    
+    /*
+    int z;
+    scan(z);
+    */
+    
+    string name;
+    print("Enter your name:");
+    scan(name);
+    print("Hello " + name);
+}

@@ -8,7 +8,7 @@ class ASTPrinter(TreeWalker):
         self.ind_inc = 2
         
         import util
-        self.file = open(util.dir_prefix + util.filename + '.ast.xml', 'w')
+        self.file = open(util.filename + '.ast.xml', 'w')
     
     def print_ast(self):
         if self.tree is None:
@@ -204,7 +204,10 @@ class ASTPrinter(TreeWalker):
         self._file_writeline('<Block>')
         self.indent += self.ind_inc
         
-        if blk.prev_blk is not None:
+        if blk.prev_blk is None:
+            self._file_writeline('<Block>')
+            self._file_writeline('</Block>')
+        else:
             blk.prev_blk.accept(self)
         if blk.stmt is None:
             self._file_writeline('<EmptyStatement>')

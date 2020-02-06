@@ -1,0 +1,25 @@
+{
+    int x = 1 + 2 + 3 + 4;
+    int y;
+    
+    y = -1 * ((5 - 6) * 8 + 2);
+    
+    print(x);
+    print(y);
+    
+    x -= 4;
+    
+    print(x);
+    
+    y += 6 - -(2 + 8 * 3);
+    
+    print(y);
+    
+    x -= y;
+    
+    print(x);
+    
+    y = 6 * -x + 1;
+    
+    print(y);
+}
