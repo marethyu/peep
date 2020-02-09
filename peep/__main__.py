@@ -1,10 +1,10 @@
 import argparse
 import sys
 
-from .lexer import Lexer
-from .parse import Parser
-from .astprinter import ASTPrinter
-from .intrp import Interpreter
+from lexer import Lexer
+from parse import Parser
+from astprinter import ASTPrinter
+from intrp import Interpreter
 
 peep_ver = "1.1.2"
 
@@ -24,10 +24,10 @@ def version():
 def main():
     parser = argparse.ArgumentParser()
     
-    group = parser.add_mutually_exclusive_group()
+    group = parser.add_mutually_exclusive_group(required=True)
     
     # only one of the arguments below can be used
-    group.add_argument("-p-ast", help="Print AST (Abstract Syntax Tree) for the program in a seperate .xml file", action="store_true")
+    group.add_argument("-p", "--print_ast", help="Print AST (Abstract Syntax Tree) for the program in a seperate .xml file", action="store_true")
     group.add_argument("-i", help="Execute the program from the source file", action="store_true")
     
     parser.add_argument("file", type=str, help="file with a .peep extension")
@@ -35,7 +35,7 @@ def main():
     
     args = parser.parse_args()
     
-    from .util import get_file
+    from util import get_file
     fh = get_file(args.file)
     
     if args.version:

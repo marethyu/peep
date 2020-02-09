@@ -1,4 +1,4 @@
-from .type import Type
+from type import Type
 
 DEFAULT_VALUES = {
     Type.INT: 0,
@@ -6,7 +6,6 @@ DEFAULT_VALUES = {
     Type.BOOL: False,
     Type.STRING: ""
 }
-
 
 class Default(object):
     @staticmethod

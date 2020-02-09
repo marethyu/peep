@@ -1,4 +1,4 @@
-class Scope(object):
+class Scope:
     def __init__(self, parent):
         self.parent = parent
         self.dct = {}
