@@ -1,13 +1,13 @@
 from type import Type
 
-class Default:
+DEFAULT_VALUES = {
+    Type.INT: 0,
+    Type.FLOAT: 0.0,
+    Type.BOOL: False,
+    Type.STRING: ""
+}
+
+class Default(object):
     @staticmethod
     def default_value(type):
-        if type == Type.INT:
-            return 0
-        elif type == Type.FLOAT:
-            return 0.0
-        elif type == Type.BOOL:
-            return False
-        else: # type == Type.STRING
-            return ""
+        return DEFAULT_VALUES.get(type)

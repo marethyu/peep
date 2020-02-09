@@ -4,7 +4,8 @@ from token import TokenTag, Token
 # global variable
 lineno = 1
 
-class Lexer(object):
+
+class Lexer:
     def __init__(self, file):
         self.prgm = file.read()
         self.prgm_len = len(self.prgm)
@@ -14,7 +15,7 @@ class Lexer(object):
 
         self.idx = 0
         self.current = self.prgm[self.idx]
-        self.prev_tag = None # for detection of unary operators
+        self.prev_tag = None  # for detection of unary operators
         self.dct = {}
         self._init_dict()
 
@@ -29,13 +30,12 @@ class Lexer(object):
         if self.current == '/':
             peek = self._peek()
 
-            if peek is not None:
-                if peek == '/':
-                    self._eat_comment()
-                    return self.next_token()
-                elif peek == '*':
-                    self._eat_multiline_comment()
-                    return self.next_token()
+            if peek == '/':
+                self._eat_comment()
+                return self.next_token()
+            elif peek == '*':
+                self._eat_multiline_comment()
+                return self.next_token()
 
         if self.current.isdigit():
             return self._make_num_tok()
@@ -61,7 +61,7 @@ class Lexer(object):
         if self.current == '=':
             self._next_ch()
 
-            if self.current is not None and self.current == '=':
+            if self.current == '=':
                 return self._make_token(TokenTag.EQ_OP, '==')
 
             self.prev_tag = TokenTag.ASSIGN
@@ -72,9 +72,9 @@ class Lexer(object):
             peek = self._peek()
 
             if op in ("+", "-"):
-                if (peek is not None and
-                    (peek == '(' or peek.isalnum()) and
-                    self.prev_tag in [None, TokenTag.ASSIGN, TokenTag.LPAREN, TokenTag.REL_OP, TokenTag.ADD_OP, TokenTag.MUL_OP]):
+                if ((peek == '(' or peek.isalnum()) and
+                        self.prev_tag in [None, TokenTag.ASSIGN, TokenTag.LPAREN, TokenTag.REL_OP, TokenTag.ADD_OP,
+                                          TokenTag.MUL_OP]):
                     return self._make_token(TokenTag.UNARY_OP, op)
 
                 if peek == "=":
@@ -87,7 +87,7 @@ class Lexer(object):
         if self.current == '!':
             self._next_ch()
 
-            if self.current is not None and self.current == '=':
+            if self.current == '=':
                 return self._make_token(TokenTag.EQ_OP, '!=')
 
             self.prev_tag = TokenTag.UNARY_OP
@@ -96,21 +96,21 @@ class Lexer(object):
         if self.current == '&':
             peek = self._peek()
 
-            if peek is not None and peek == '&':
-                self._next_ch() # eat '&'
+            if peek == '&':
+                self._next_ch()  # eat '&'
                 return self._make_token(TokenTag.AND, '&&')
 
         if self.current == '|':
             peek = self._peek()
 
-            if peek is not None and peek == '|':
-                self._next_ch() # eat '|'
+            if peek == '|':
+                self._next_ch()  # eat '|'
                 return self._make_token(TokenTag.OR, '||')
 
         if self.current == '<':
             self._next_ch()
 
-            if self.current is not None and self.current == '=':
+            if self.current == '=':
                 return self._make_token(TokenTag.REL_OP, '<=')
 
             self.prev_tag = TokenTag.REL_OP
@@ -119,7 +119,7 @@ class Lexer(object):
         if self.current == '>':
             self._next_ch()
 
-            if self.current is not None and self.current == '=':
+            if self.current == '=':
                 return self._make_token(TokenTag.REL_OP, '>=')
 
             self.prev_tag = TokenTag.REL_OP
@@ -128,13 +128,13 @@ class Lexer(object):
         if self.current == '"':
             escape_characters = {'n': '\n', 't': '\t', 'v': '\v', 'b': '\b', 'f': '\f', 'a': '\a', '\\': '\\',
                                  '"': '\"', '\'': '\''}
-            
+
             string_literal = ""
             # consume '"'
             self._next_ch()
             prev = self.current
             is_escaped = prev == '\\'
-            
+
             while self.current is not None and (self.current != '"' or is_escaped):
                 self._next_ch()
                 # handle escape sequences
@@ -146,7 +146,7 @@ class Lexer(object):
                 else:
                     string_literal += prev
                     is_escaped = self.current == "\\"
-                
+
                 prev = self.current
             if prev is not None:
                 string_literal += prev
@@ -185,7 +185,7 @@ class Lexer(object):
             num += self.current
             self._next_ch()
 
-        if self.current is not None and self.current == '.':
+        if self.current == '.':
             num += self.current
             self._next_ch()
 
@@ -215,7 +215,7 @@ class Lexer(object):
                 self._next_ch()
                 self._next_ch()
                 break
-            else: # self._peek() != '/' (oops...)
+            else:  # self._peek() != '/' (oops...)
                 self._next_ch()
                 # then continue the loop...
 
@@ -245,18 +245,20 @@ class Lexer(object):
         self.current = None if self.idx >= self.prgm_len else self.prgm[self.idx]
 
     def _init_dict(self):
-        self.dct['int'] = TokenTag.INT
-        self.dct['float'] = TokenTag.FLOAT
-        self.dct['bool'] = TokenTag.BOOL
-        self.dct['string'] = TokenTag.STRING
-        self.dct['if'] = TokenTag.IF
-        self.dct['else'] = TokenTag.ELSE
-        self.dct['while'] = TokenTag.WHILE
-        self.dct['for'] = TokenTag.FOR
-        self.dct['do'] = TokenTag.DO
-        self.dct['break'] = TokenTag.BREAK
-        self.dct['continue'] = TokenTag.CONTINUE
-        self.dct['print'] = TokenTag.PRINT
-        self.dct["scan"] = TokenTag.SCAN
-        self.dct['true'] = TokenTag.TRUE
-        self.dct['false'] = TokenTag.FALSE
+        self.dct.update({
+            'int': TokenTag.INT,
+            'float': TokenTag.FLOAT,
+            'bool': TokenTag.BOOL,
+            'string': TokenTag.STRING,
+            'if': TokenTag.IF,
+            'else': TokenTag.ELSE,
+            'while': TokenTag.WHILE,
+            'for': TokenTag.FOR,
+            'do': TokenTag.DO,
+            'break': TokenTag.BREAK,
+            'continue': TokenTag.CONTINUE,
+            'print': TokenTag.PRINT,
+            "scan": TokenTag.SCAN,
+            'true': TokenTag.TRUE,
+            'false': TokenTag.FALSE,
+        })
