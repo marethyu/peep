@@ -1,6 +1,6 @@
 from sys import exit
 
-class PeepError(object):
+class PeepError:
     def __init__(self, base_error_name, lineno, message):
         self.message = base_error_name + " @line {}".format(lineno) + ": " + message
     
