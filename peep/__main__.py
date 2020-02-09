@@ -12,6 +12,8 @@ def p_ast(file):
     root = Parser(Lexer(file)).parse()
     astprinter = ASTPrinter(root)
     astprinter.print_ast()
+    import util
+    astprinter.write(util.filename)
 
 def i(file):
     root = Parser(Lexer(file)).parse()
@@ -27,7 +29,7 @@ def main():
     group = parser.add_mutually_exclusive_group(required=True)
     
     # only one of the arguments below can be used
-    group.add_argument("-p", "--print_ast", help="Print AST (Abstract Syntax Tree) for the program in a seperate .xml file", action="store_true")
+    group.add_argument("-p-ast", help="Print AST (Abstract Syntax Tree) for the program in a seperate .xml file", action="store_true")
     group.add_argument("-i", help="Execute the program from the source file", action="store_true")
     
     parser.add_argument("file", type=str, help="file with a .peep extension")
@@ -37,7 +39,6 @@ def main():
     
     from util import get_file
     fh = get_file(args.file)
-    
     if args.version:
         version()
     
