@@ -139,7 +139,7 @@ class Lexer(object):
                 self._next_ch()
                 # handle escape sequences
                 if is_escaped:
-                    str += escape_characters.get(self.current, '\\' + self.current)
+                    string_literal += escape_characters.get(self.current, '\\' + self.current)
                     is_escaped = False
                     # current is the escaped character, advance by one
                     self._next_ch()
