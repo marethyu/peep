@@ -129,7 +129,7 @@ class Lexer(object):
             escape_characters = {'n': '\n', 't': '\t', 'v': '\v', 'b': '\b', 'f': '\f', 'a': '\a', '\\': '\\',
                                  '"': '\"', '\'': '\''}
             
-            str = ""
+            string_literal = ""
             # consume '"'
             self._next_ch()
             prev = self.current
@@ -144,14 +144,14 @@ class Lexer(object):
                     # current is the escaped character, advance by one
                     self._next_ch()
                 else:
-                    str += prev
+                    string_literal += prev
                     is_escaped = self.current == "\\"
                 
                 prev = self.current
             if prev is not None:
-                str += prev
+                string_literal += prev
 
-            return self._make_token(TokenTag.STR_LITERAL, str)
+            return self._make_token(TokenTag.STR_LITERAL, string_literal)
 
         raise_error(LexError("Unknown token {}".format(self.current), lineno))
 
