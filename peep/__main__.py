@@ -1,10 +1,10 @@
 import argparse
 import sys
 
-from .lexer import Lexer
-from .parse import Parser
-from .astprinter import ASTPrinter
-from .intrp import Interpreter
+from lexer import Lexer
+from parse import Parser
+from astprinter import ASTPrinter
+from intrp import Interpreter
 
 peep_ver = "1.1.2"
 
@@ -35,7 +35,7 @@ def main():
     
     args = parser.parse_args()
     
-    from .util import get_file
+    from util import get_file
     fh = get_file(args.file)
     
     if args.version:
@@ -47,6 +47,8 @@ def main():
     elif args.i:
         i(fh)
         fh.close()
+    else:
+        print("You failed to select an option")
 
 if __name__ == '__main__':
     main()
