@@ -1,6 +1,6 @@
 from type import Type
 
-class Default(object):
+class Default:
     @staticmethod
     def default_value(type):
         if type == Type.INT:
