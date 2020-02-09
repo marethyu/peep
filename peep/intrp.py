@@ -4,7 +4,7 @@ from scope import Scope
 from treewalker import TreeWalker
 from type import Type
 
-class ChainedList(object):
+class ChainedList:
     def __init__(self, prev):
         self.prev = prev
         self.data = []
@@ -15,7 +15,7 @@ class ChainedList(object):
     def elm_exists(self, elm):
         return elm in self.data
 
-class ActivationRecord(object):
+class ActivationRecord:
     def __init__(self, filename, current_function, last_lineno):
         self.filename = filename
         self.current_function = current_function
@@ -43,7 +43,7 @@ class ActivationRecord(object):
             self.cl.append(key)
         self.mmap[key] = value
 
-class CallStack(object):
+class CallStack:
     def __init__(self):
         self.records = []
     
@@ -273,7 +273,7 @@ class Interpreter(TreeWalker):
         
         # we don't want to exploit Python's built-in print
         # function too much so a little modification is made
-        if type(out) == bool:
+        if isinstance(out, bool):
             print("true" if out else "false")
         else:
             print(out)
