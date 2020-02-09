@@ -1,8 +1,8 @@
 import enum
 
 from abc import ABC, abstractmethod
-from .err import TypeError, raise_error
-from .type import Type
+from err import TypeError, raise_error
+from type import Type
 
 class Kind(enum.Enum):
     # Expressions
@@ -38,7 +38,7 @@ class ASTNode(ABC):
         self.kind = kind
         self.value = value
         
-        from . import lexer
+        import lexer
         self.lineno = lexer.lineno
     
     @abstractmethod
