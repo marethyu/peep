@@ -24,10 +24,10 @@ def version():
 def main():
     parser = argparse.ArgumentParser()
     
-    group = parser.add_mutually_exclusive_group()
+    group = parser.add_mutually_exclusive_group(required=True)
     
     # only one of the arguments below can be used
-    group.add_argument("-p-ast", help="Print AST (Abstract Syntax Tree) for the program in a seperate .xml file", action="store_true")
+    group.add_argument("-p", "--print-ast", help="Print AST (Abstract Syntax Tree) for the program in a seperate .xml file", action="store_true")
     group.add_argument("-i", help="Execute the program from the source file", action="store_true")
     
     parser.add_argument("file", type=str, help="file with a .peep extension")
@@ -47,8 +47,6 @@ def main():
     elif args.i:
         i(fh)
         fh.close()
-    else:
-        print("You failed to select an option")
 
 if __name__ == '__main__':
     main()
