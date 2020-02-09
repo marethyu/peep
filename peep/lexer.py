@@ -148,8 +148,6 @@ class Lexer(object):
                     is_escaped = self.current == "\\"
                 
                 prev = self.current
-            if prev is not None:
-                string_literal += prev
 
             return self._make_token(TokenTag.STR_LITERAL, string_literal)
 
