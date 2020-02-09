@@ -139,22 +139,21 @@ class Lexer(object):
             s = str
             prev = None
             str = ""
-
+            escape_characters = {'n': '\n', 't': '\t', 'v': '\v', 'b': '\b', 'f': '\f', 'a': '\a', '\\': '\\',
+                                 '"': '\"', '\'': '\''}
             for ch in s:
                 if prev is None:
                     prev = ch
                 elif prev == '\\':
                     prev = None
-                    if ch == '\\' or ch == '\'':
-                        str += ch
-                    else: # unknown escape sequence
-                        str += '\\' + ch
+                    str += escape_characters.get(ch, '\\' + ch)
                 else:
                     str += prev
                     prev = ch
-
             if prev is not None:
                 str += prev
+
+            return self._make_token(TokenTag.STR_LITERAL, str)
 
             return self._make_token(TokenTag.STR_LITERAL, str)
 
