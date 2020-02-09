@@ -1,4 +1,4 @@
-from treewalker import TreeWalker
+from .treewalker import TreeWalker
 
 class ASTPrinter(TreeWalker):
     def __init__(self, tree):
@@ -7,7 +7,7 @@ class ASTPrinter(TreeWalker):
         self.indent = 0
         self.ind_inc = 2
         
-        import util
+        from . import util
         self.file = open(util.filename + '.ast.xml', 'w')
     
     def print_ast(self):

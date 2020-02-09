@@ -1,5 +1,5 @@
-from err import LexError, raise_error
-from token import TokenTag, Token
+from .err import LexError, raise_error
+from .token import TokenTag, Token
 
 # global variable
 lineno = 1
