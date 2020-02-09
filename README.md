@@ -8,9 +8,14 @@ This repository consists of a complete compiler frontend (lexical analyzer, synt
 
 ## Getting Started (for Windows users)
 
-This project is built with Python 3.6.0 so make sure you have the [specified version of python](https://www.python.org/downloads/release/python-360/) installed in your system. Also Python must be added in PATH environment variable.
+This project is built with Python 3.6.0 so make sure you have [Python](https://www.python.org/downloads/) installed in your system with version 3.6.0 or greater. Also Python must be added in PATH environment variable.
 
-After you satisfy the Python requirement, open a command prompt and type this command: `python peep.py`. Have fun!
+After you satisfy the Python requirement, open a command prompt and type the following command to install Peep:
+```markdown
+pip install thepeep
+```
+
+Then type ```peep```, have fun!
 
 ## Language Overview
 
@@ -18,21 +23,13 @@ Peep is derived from C based on its syntax. It's similar to C in most ways excep
 
 ### Built-in variable types and literals
 
-#### int
+- **int** An unbounded number (ie. ```1```, ```-35```, ```134```)
 
-An unbounded number (ie. ```1```, ```-35```, ```134```)
+- **float** An unbounded number with a decimal point (ie. ```3.14```, ```2.71```)
 
-#### float
+- **bool** It's allowed to take either ```true``` or ```false```.
 
-An unbounded number with a decimal point (ie. ```3.14```, ```2.71```)
-
-#### bool
-
-It's allowed to take either ```true``` or ```false```.
-
-#### string
-
-A sequence of characters enclosed with double quotes (ie. ```"foobarbaz"```, ```"#@$*"```, ```"123456"```)
+- **string** A sequence of characters enclosed with double quotes (ie. ```"foobarbaz"```, ```"#@$*"```, ```"123456"```)
 
 [TODO]
 
@@ -100,12 +97,13 @@ python peep.py -i ____.peep
 
 ## Changes
 
-[TODO]
+- 02/08/2020: Organized files; Packaged this repository to PyPI
 
 ## Things to Add for Next Version (not necessary in order)
 - Ternary operator
 - Global variables
 - Command line arguments
+- Option to customize IO
 - Functions
 - More built-in functions
 - Variable references
