@@ -1,4 +1,4 @@
-from .type import Type
+from type import Type
 
 class Default(object):
     @staticmethod
