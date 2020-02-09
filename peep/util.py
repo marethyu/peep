@@ -7,9 +7,9 @@ def get_file(file):
     try:
         global filename
         filename = file[:-5]
-        f = open(file)
+        fh = open(file)
     except FileNotFoundError:
         print("That file does not exist!")
         sys.exit(1)
     finally:
-        return f
+        return fh
