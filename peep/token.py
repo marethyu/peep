@@ -47,7 +47,7 @@ class TokenTag(enum.Enum):
     STR_LITERAL = 33
     EOF = 34
 
-class Token(object):
+class Token:
     def __init__(self, tag, lexeme, lineno):
         self.tag = tag
         self.lexeme = lexeme
