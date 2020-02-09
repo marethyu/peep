@@ -126,34 +126,30 @@ class Lexer(object):
             return Token(TokenTag.REL_OP, '>', lineno)
 
         if self.current == '"':
-            str = ""
-
-            # consume '"'
-            self._next_ch()
-
-            while self.current is not None and self.current != '"':
-                str += self.current
-                self._next_ch()
-
-            # handle escape sequences
-            s = str
-            prev = None
-            str = ""
             escape_characters = {'n': '\n', 't': '\t', 'v': '\v', 'b': '\b', 'f': '\f', 'a': '\a', '\\': '\\',
                                  '"': '\"', '\'': '\''}
-            for ch in s:
-                if prev is None:
-                    prev = ch
-                elif prev == '\\':
-                    prev = None
-                    str += escape_characters.get(ch, '\\' + ch)
+            
+            str = ""
+            # consume '"'
+            self._next_ch()
+            prev = self.current
+            is_escaped = prev == '\\'
+            
+            while self.current is not None and (self.current != '"' or is_escaped):
+                self._next_ch()
+                # handle escape sequences
+                if is_escaped:
+                    str += escape_characters.get(self.current, '\\' + self.current)
+                    is_escaped = False
+                    # current is the escaped character, advance by one
+                    self._next_ch()
                 else:
                     str += prev
-                    prev = ch
+                    is_escaped = self.current == "\\"
+                
+                prev = self.current
             if prev is not None:
                 str += prev
-
-            return self._make_token(TokenTag.STR_LITERAL, str)
 
             return self._make_token(TokenTag.STR_LITERAL, str)
 
