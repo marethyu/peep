@@ -94,3 +94,6 @@ class Type(enum.Enum):
     @staticmethod
     def is_bool(type):
         return type == Type.BOOL
+    
+    def __hash__(self):
+        return self.value
