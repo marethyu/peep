@@ -31,7 +31,6 @@ class ASTPrinter(TreeWalker):
         const_val = str(const.value)
         if "&" in const_val:
             possible_lone_amps = const_val.split("&")
-            print(const_val)
             for index, sub_str in enumerate(possible_lone_amps):
                 if sub_str.startswith("quot;") or sub_str.startswith("lt;") or \
                         sub_str.startswith("amp;") or sub_str.startswith("gt;"):
