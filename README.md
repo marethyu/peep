@@ -20,6 +20,19 @@ pip install thepeep
 
 Then type ```peep```, have fun!
 
+## Basic Usage
+
+To run the Peep program, save the code in a file with .peep extension and then type the following command in the prompt (replace ____ with your file name):
+```markdown
+peep -i ____.peep
+```
+
+To view the Peep program's abstract syntax tree (AST), run the following command:
+```markdown
+peep -p ____.peep
+```
+It will generate a seperate file with .ast.xml extension. You can use your favourite text editor to view AST in the generated file.
+
 ## Language Overview
 
 Peep is derived from C based on its syntax. It's similar to C in most ways except that the Peep programs' entry point is a block (a code enclosed in curly braces {...}) whereas C programs have a main function as its entry point.
@@ -89,11 +102,6 @@ Program to calculate lowest commom multiple of two numbers
 }
 ```
 
-To run one of the programs above, save the code in a file with .peep extension and then type the following command in the prompt (replace ____ with your file name):
-```markdown
-python peep.py -i ____.peep
-```
-
 ## Technical Details
 
 [TODO]
@@ -119,10 +127,14 @@ python peep.py -i ____.peep
 - Code generation
 - Code optimization
 
+## Contributing
+
+I appreciate any kind of contributions. It can be bug fixes, code improvements, recommendations, and etc...
+
 ## License
 
 GNU General Public License v3.0
 
-## Bugs?
+## Bugs or Feature Request?
 
-Please [email](mailto:codingexpert123@gmail.com) me if you find any.
+Please [email](mailto:codingexpert123@gmail.com) me or you can open a new issue for this repository.
