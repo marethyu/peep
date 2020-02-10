@@ -12,6 +12,8 @@ def p_ast(file):
     root = Parser(Lexer(file)).parse()
     astprinter = ASTPrinter(root)
     astprinter.print_ast()
+    import util
+    astprinter.write(util.filename)
 
 def i(file):
     root = Parser(Lexer(file)).parse()
@@ -37,7 +39,6 @@ def main():
     
     from util import get_file
     fh = get_file(args.file)
-    
     if args.version:
         version()
     
