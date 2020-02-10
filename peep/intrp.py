@@ -156,7 +156,7 @@ class Interpreter(TreeWalker):
     
     def visit_decl(self, decl):
         ar = self.stk.top()
-        from .defaultvals import Default
+        from defaultvals import Default
         ar.put(decl.ident.value, Default.default_value(decl.ident.type), True)
         return decl.ident
     
