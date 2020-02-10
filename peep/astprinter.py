@@ -29,6 +29,9 @@ class ASTPrinter(TreeWalker):
 
     def visit_const(self, const):
         const_val = str(const.value).replace('"', "&quot;")
+        const_val = str(const_val).replace('<', "&lt;")
+        const_val = str(const_val).replace('>', "&gt;")
+
         self._file_writeline('<Constant type=\"{}\" value=\"{}\"></Constant>'.format(const.type, const_val))
 
     def visit_orop(self, orop):
