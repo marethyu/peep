@@ -126,7 +126,7 @@ class Lexer:
             return Token(TokenTag.REL_OP, '>', lineno)
 
         if self.current == '"':
-            escape_characters = {'n': '\n', 't': '\t', 'v': '\v', 'b': '\b', 'f': '\f', 'a': '\a', '\\': '\\',
+            escape_characters = {'n': '\n', 't': '\t', 'v': '\v', 'b': '\b', 'f': '\f', 'a': '\a', 'r': '\r', '\\': '\\',
                                  '"': '\"', '\'': '\''}
 
             string_literal = ""
@@ -147,6 +147,8 @@ class Lexer:
                     string_literal += prev
                     is_escaped = self.current == "\\"
 
+                if self.current == '\\':
+                    is_escaped = True
                 prev = self.current
 
             return self._make_token(TokenTag.STR_LITERAL, string_literal)
