@@ -28,9 +28,27 @@ class ASTPrinter(TreeWalker):
         self._file_writeline('<Identifier type=\"{}\" name=\"{}\"></Identifier>'.format(ident.type, ident.value))
 
     def visit_const(self, const):
-        const_val = str(const.value).replace('"', "&quot;")
-        const_val = str(const_val).replace('<', "&lt;")
-        const_val = str(const_val).replace('>', "&gt;")
+        const_val = str(const.value)
+        if "&" in const_val:
+            possible_lone_amps = const_val.split("&")
+            print(const_val)
+            for index, sub_str in enumerate(possible_lone_amps):
+                if sub_str.startswith("quot;") or sub_str.startswith("lt;") or \
+                        sub_str.startswith("amp;") or sub_str.startswith("gt;"):
+                    possible_lone_amps[index] = "amp;" + sub_str
+
+                if index == 0:
+                    if possible_lone_amps[0] == "":
+                        possible_lone_amps[index] = "amp;" + sub_str
+                else:
+                    possible_lone_amps[index] = "amp;" + sub_str
+
+            const_val = "&".join(possible_lone_amps)
+
+        const_val = const_val.replace('<', "&lt;")
+        const_val = const_val.replace('>', "&gt;")
+        const_val = const_val.replace('"', "&quot;")
+        const_val = const_val.replace('\'', "&apos;")
 
         self._file_writeline('<Constant type=\"{}\" value=\"{}\"></Constant>'.format(const.type, const_val))
 
