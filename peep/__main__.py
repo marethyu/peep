@@ -42,7 +42,7 @@ def main():
     if args.version:
         version()
     
-    if args.p_ast:
+    if args.print_ast:
         p_ast(fh)
         fh.close()
     elif args.i:
