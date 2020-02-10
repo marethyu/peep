@@ -44,9 +44,9 @@
 <int_constant> ::= <digit> [ <digit> ]
 <real_constant> ::= <int_constant> "." <digit> [ <digit> ]
 <bool_const> ::= "true" | "false"
-<string_literal> ::= "\"" <character> [ <character> ] "\""
+<string_literal> ::= """ <character> [ <character> ] """
 <digit> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
 <alpha> ::= "a" | "b" | "c" | "d" | "e" | ... | "z"
 <alpha_num> ::= <digit> | <alpha>
 <character> ::= <alpha_num> | "\" <escape_seq>
-<escape_seq> ::= "n" | "t" | "\"" | "'" | "\" | "a" | "b" | "f" | "r" | "v"
+<escape_seq> ::= "n" | "t" | """ | "'" | "" | "a" | "b" | "f" | "r" | "v"
