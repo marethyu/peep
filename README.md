@@ -1,5 +1,8 @@
 # Peep
 
+![](https://img.shields.io/badge/pypi-1.1.2-blue)
+![](https://img.shields.io/badge/version-v1.1.2-blue)
+
 ## Overview
 
 Peep is a toy programming language with small practical applications. This project helps me to learn more about complier and interpreter design and implementation. Peep's syntax is mostly based off C, with some minor modifications.
