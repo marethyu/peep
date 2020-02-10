@@ -60,6 +60,20 @@ Hello world program
 }
 ```
 
+Generated .xml file for the program above
+```markdown
+<?xml version="1.0" encoding="UTF-8"?>
+<Program>
+  <Block>
+    <Block>
+    </Block>
+    <Print>
+      <Constant type="Type.STRING" value="Hello World!"></Constant>
+    </Print>
+  </Block>
+</Program>
+```
+
 Program to input and print your name
 ```markdown
 {
