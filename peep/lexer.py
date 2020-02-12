@@ -140,15 +140,12 @@ class Lexer:
                 # handle escape sequences
                 if is_escaped:
                     string_literal += escape_characters.get(self.current, '\\' + self.current)
-                    is_escaped = False
                     # current is the escaped character, advance by one
                     self._next_ch()
                 else:
                     string_literal += prev
-                    is_escaped = self.current == "\\"
-
-                if self.current == '\\':
-                    is_escaped = True
+                    
+                is_escaped = self.current == "\\"
                 prev = self.current
 
             return self._make_token(TokenTag.STR_LITERAL, string_literal)
