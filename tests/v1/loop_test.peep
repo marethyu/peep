@@ -46,16 +46,4 @@
         
         print("end");
     }
-    
-    int x = 1;
-    
-    do {
-        if (x % 2 == 1) {
-            x += 1;
-            continue;
-        }
-        
-        print(x);
-        x += 1;
-    } while (x <= 10);
 }

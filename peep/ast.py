@@ -24,14 +24,13 @@ class Kind(enum.Enum):
     IF = 13
     WHILE = 14
     FOR = 15
-    DO_WHILE = 16
-    BREAK = 17
-    CONT = 18
-    EXPR = 19 # this is actually a statement
-    PRINT = 20
-    SCAN = 21
-    BLOCK = 22 # a collection of statements
-    PRGM = 23 # an entire program
+    BREAK = 16
+    CONT = 17
+    EXPR = 18 # this is actually a statement
+    PRINT = 19
+    SCAN = 20
+    BLOCK = 21 # a collection of statements
+    PRGM = 22 # an entire program
 
 class ASTNode(ABC):
     def __init__(self, kind, value):
@@ -222,18 +221,6 @@ class For(ASTNode):
     
     def accept(self, tree_walker):
         return tree_walker.visit_for(self)
-
-class DoWhile(ASTNode):
-    def __init__(self, block, test):
-        super().__init__(Kind.DO_WHILE, None)
-        self.block = block
-        self.test = test
-        
-        if not Type.is_bool(test.type):
-            raise_error(TypeError(self.lineno, "Expression inside (...) must return bool! (It returns {} instead)".format(test.type)))
-    
-    def accept(self, tree_walker):
-        return tree_walker.visit_dowhile(self)
 
 class Break(ASTNode):
     def __init__(self):

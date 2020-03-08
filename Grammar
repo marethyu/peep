@@ -3,7 +3,6 @@
 <statement> ::= "if" <paren_expression> <block> [ [ "else" "if" <paren_expression> <block> ] "else" <block> ] |
                 "while" <paren_expression> <block> |
                 "for" "(" <declare_assign> ";" <expression> ";" <assignment> | <increment> | <decrement> ")" <block> |
-                "do" <block> "while" <paren_expression> ";" |
                 "break" |
                 "continue" |
                 <block> |

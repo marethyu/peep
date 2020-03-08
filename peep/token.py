@@ -12,40 +12,39 @@ class TokenTag(enum.Enum):
     ELSE = 5
     WHILE = 6
     FOR = 7
-    DO = 8
-    BREAK = 9
-    CONTINUE = 10
+    BREAK = 8
+    CONTINUE = 9
     
     # Builtin functions
-    PRINT = 11
-    SCAN = 12
+    PRINT = 10
+    SCAN = 11
     
     # Single character tokens
-    LPAREN = 13
-    RPAREN = 14
-    LBRACK = 15
-    RBRACK = 16
-    SEMICOLON = 17
-    ASSIGN = 18
+    LPAREN = 12
+    RPAREN = 13
+    LBRACK = 14
+    RBRACK = 15
+    SEMICOLON = 16
+    ASSIGN = 17
     
-    OR = 19
-    AND = 20
-    EQ_OP = 21
-    REL_OP = 22
-    ADD_OP = 23
-    MUL_OP = 24
-    UNARY_OP = 25
+    OR = 18
+    AND = 19
+    EQ_OP = 20
+    REL_OP = 21
+    ADD_OP = 22
+    MUL_OP = 23
+    UNARY_OP = 24
     
     # Other tokens
-    IDENT = 26
-    INT_CONST = 27
-    RL_CONST = 28
-    PLUS_EQ = 29
-    MINUS_EQ = 30
-    TRUE = 31
-    FALSE = 32
-    STR_LITERAL = 33
-    EOF = 34
+    IDENT = 25
+    INT_CONST = 26
+    RL_CONST = 27
+    PLUS_EQ = 28
+    MINUS_EQ = 29
+    TRUE = 30
+    FALSE = 31
+    STR_LITERAL = 32
+    EOF = 33
 
 class Token:
     def __init__(self, tag, lexeme, lineno):

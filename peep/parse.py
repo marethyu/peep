@@ -43,7 +43,6 @@ class Parser(object):
         <statement> ::= "if" <paren_expression> <block> [ [ "else" "if" <paren_expression> <block> ] "else" <block> ] |
                         "while" <paren_expression> <block> |
                         "for" "(" <declare_assign> ";" <expression> ";" <assignment> | <increment> | <decrement> ")" <block> |
-                        "do" <block> "while" <paren_expression> ";" |
                         "break" |
                         "continue" |
                         <block> |
@@ -119,14 +118,6 @@ class Parser(object):
             node = For(init, test, stmt, block_node)
             self.in_loop = False
             self.symtab = self.symtab.parent
-        elif self.look.tag is Tag.DO:
-            self._match(Tag.DO)
-            self.in_loop = True
-            block = self._block()
-            self.in_loop = False
-            self._match(Tag.WHILE)
-            node = DoWhile(block, self._paren_expr())
-            self._match(Tag.SEMICOLON)
         elif self.look.tag is Tag.BREAK:
             if not self.in_loop:
                 raise_error(SyntaxError("break is used outside of a loop!", self.look.lineno))

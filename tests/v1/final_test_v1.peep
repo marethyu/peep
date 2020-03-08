@@ -142,12 +142,7 @@
         print("end");
     }
     
-    int j = 0;
     ;;;
-    do {
-        print(j);
-        j += 1;
-    } while (j < 10);
     
     print("Poopeepee");
     
@@ -174,8 +169,7 @@
     print(1 / w);
     
     if (true) {}
-    /* while (true) {}
-    do {} while (true); */
+    /* while (true) {} */
     for (int q = 0; q < 10; q += 1) {}
     {}
 }

@@ -69,10 +69,6 @@ class TreeWalker(ABC):
         pass
     
     @abstractmethod
-    def visit_dowhile(self, dowhile):
-        pass
-    
-    @abstractmethod
     def visit_break(self, break_):
         pass
     

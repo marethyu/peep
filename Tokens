@@ -9,7 +9,6 @@ IF                            "if"
 ELSE                          "else"
 WHILE                         "while"
 FOR                           "for"
-DO                            "do"
 BREAK                         "break"
 CONTINUE                      "continue"
 

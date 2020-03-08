@@ -251,7 +251,6 @@ class Lexer:
             'else': TokenTag.ELSE,
             'while': TokenTag.WHILE,
             'for': TokenTag.FOR,
-            'do': TokenTag.DO,
             'break': TokenTag.BREAK,
             'continue': TokenTag.CONTINUE,
             'print': TokenTag.PRINT,

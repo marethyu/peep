@@ -240,25 +240,6 @@ class Interpreter(TreeWalker):
         self.encountered_break = False
         self.stk.top().old_scope()
     
-    def visit_dowhile(self, dowhile):
-        self.stk.top().new_scope()
-        
-        while True:
-            if dowhile.block is not None:
-                dowhile.block.accept(self)
-            
-            if self.encountered_break:
-                break
-            
-            if self.encountered_cont:
-                self.encountered_cont = False
-            
-            if not dowhile.test.accept(self):
-                break
-        
-        self.encountered_break = False
-        self.stk.top().old_scope()
-    
     def visit_break(self, break_):
         self.encountered_break = True
     

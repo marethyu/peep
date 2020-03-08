@@ -187,20 +187,6 @@ class ASTPrinter(TreeWalker):
         self.indent -= self.ind_inc
         self._file_writeline('</For>')
 
-    def visit_dowhile(self, dowhile):
-        self._file_writeline('<DoWhile>')
-        self.indent += self.ind_inc
-
-        if dowhile.block is None:
-            self._file_writeline('<Block>')
-            self._file_writeline('</Block>')
-        else:
-            dowhile.block.accept(self)
-        dowhile.test.accept(self)
-
-        self.indent -= self.ind_inc
-        self._file_writeline('</DoWhile>')
-
     def visit_break(self, break_):
         self._file_writeline('<Break></Break>')
 
