@@ -21,6 +21,12 @@ class Type(enum.Enum):
             return op_type in [Type.INT, Type.FLOAT, Type.STRING]
         elif op == '-=':
             return op_type in [Type.INT, Type.FLOAT]
+        elif op == '*=':
+            return op_type in [Type.INT, Type.FLOAT]
+        elif op == '/=':
+            return op_type in [Type.INT, Type.FLOAT]
+        elif op == '%=':
+            return op_type in [Type.INT, Type.FLOAT]
         elif op == '==':
             return op_type in [Type.INT, Type.FLOAT, Type.BOOL, Type.STRING]
         elif op == '!=':

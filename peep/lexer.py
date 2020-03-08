@@ -82,6 +82,14 @@ class Lexer:
 
                 return self._make_token(TokenTag.ADD_OP, op)
 
+            if peek == "=":
+                if op == '*':
+                    return self._make_token(TokenTag.MUL_EQ, '*=', True)
+                elif op == '/':
+                    return self._make_token(TokenTag.DIV_EQ, '/=', True)
+                else:
+                    return self._make_token(TokenTag.MOD_EQ, '%=', True)
+
             return self._make_token(TokenTag.MUL_OP, op)
 
         if self.current == '!':

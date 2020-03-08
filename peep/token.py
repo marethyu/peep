@@ -41,10 +41,13 @@ class TokenTag(enum.Enum):
     RL_CONST = 27
     PLUS_EQ = 28
     MINUS_EQ = 29
-    TRUE = 30
-    FALSE = 31
-    STR_LITERAL = 32
-    EOF = 33
+    MUL_EQ = 30
+    DIV_EQ = 31
+    MOD_EQ = 32
+    TRUE = 33
+    FALSE = 34
+    STR_LITERAL = 35
+    EOF = 36
 
 class Token:
     def __init__(self, tag, lexeme, lineno):

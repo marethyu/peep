@@ -38,6 +38,9 @@ INT_CONST
 RL_CONST
 PLUS_EQ                       "+="
 MINUS_EQ                      "-="
+MUL_EQ                        "*="
+DIV_EQ                        "/="
+MOD_EQ                        "%="
 TRUE                          "true"
 FALSE                         "false"
 STR_LITERAL

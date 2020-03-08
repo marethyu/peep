@@ -57,6 +57,18 @@ class TreeWalker(ABC):
         pass
     
     @abstractmethod
+    def visit_mul_assign(self, mul_assign):
+        pass
+    
+    @abstractmethod
+    def visit_div_assign(self, div_assign):
+        pass
+    
+    @abstractmethod
+    def visit_mod_assign(self, mod_assign):
+        pass
+    
+    @abstractmethod
     def visit_if(self, if_):
         pass
     

@@ -21,16 +21,19 @@ class Kind(enum.Enum):
     ASSIGN = 10
     INC = 11
     DEC = 12
-    IF = 13
-    WHILE = 14
-    FOR = 15
-    BREAK = 16
-    CONT = 17
-    EXPR = 18 # this is actually a statement
-    PRINT = 19
-    SCAN = 20
-    BLOCK = 21 # a collection of statements
-    PRGM = 22 # an entire program
+    MUL_AS = 13
+    DIV_AS = 14
+    MOD_AS = 15
+    IF = 16
+    WHILE = 17
+    FOR = 18
+    BREAK = 19
+    CONT = 20
+    EXPR = 21 # this is actually a statement
+    PRINT = 22
+    SCAN = 23
+    BLOCK = 24 # a collection of statements
+    PRGM = 25 # an entire program
 
 class ASTNode(ABC):
     def __init__(self, kind, value):
@@ -180,6 +183,48 @@ class Decrement(ASTNode):
     
     def accept(self, tree_walker):
         return tree_walker.visit_dec(self)
+
+class MultiplicativeAssign(ASTNode):
+    def __init__(self, ident, expr):
+        super().__init__(Kind.MUL_AS, None)
+        self.ident = ident
+        self.expr = expr
+        
+        if not Type.check_match(ident.type, expr.type):
+            raise_error(TypeError(self.lineno, "Types does not match! (ident type:{}, expr type:{})".format(ident.type, expr.type)))
+        if not Type.is_type_ok(ident.type, '*='):
+            raise_error(TypeError(self.lineno, "Incompatible types for an operator (type:{}, operator:{})".format(ident.type, '*=')))
+    
+    def accept(self, tree_walker):
+        return tree_walker.visit_mul_assign(self)
+
+class DivisionAssign(ASTNode):
+    def __init__(self, ident, expr):
+        super().__init__(Kind.DIV_AS, None)
+        self.ident = ident
+        self.expr = expr
+        
+        if not Type.check_match(ident.type, expr.type):
+            raise_error(TypeError(self.lineno, "Types does not match! (ident type:{}, expr type:{})".format(ident.type, expr.type)))
+        if not Type.is_type_ok(ident.type, '/='):
+            raise_error(TypeError(self.lineno, "Incompatible types for an operator (type:{}, operator:{})".format(ident.type, '/=')))
+    
+    def accept(self, tree_walker):
+        return tree_walker.visit_div_assign(self)
+
+class ModulusAssign(ASTNode):
+    def __init__(self, ident, expr):
+        super().__init__(Kind.MOD_AS, None)
+        self.ident = ident
+        self.expr = expr
+        
+        if not Type.check_match(ident.type, expr.type):
+            raise_error(TypeError(self.lineno, "Types does not match! (ident type:{}, expr type:{})".format(ident.type, expr.type)))
+        if not Type.is_type_ok(ident.type, '%='):
+            raise_error(TypeError(self.lineno, "Incompatible types for an operator (type:{}, operator:{})".format(ident.type, '%=')))
+    
+    def accept(self, tree_walker):
+        return tree_walker.visit_mod_assign(self)
 
 class If(ASTNode):
     def __init__(self, test, block, brs):

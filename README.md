@@ -122,6 +122,7 @@ Program to calculate lowest commom multiple of two numbers
 
 ## Changes
 
+- 03/7/2020: Added new operators: *=, /=, %=
 - 03/7/2020: For technical reasons, do-while loop is removed from the language's grammar
 - 02/08/2020: Organized files; Packaged this repository to PyPI
 

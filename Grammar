@@ -2,7 +2,7 @@
 <block> ::= "{" { <statement> } "}"
 <statement> ::= "if" <paren_expression> <block> [ [ "else" "if" <paren_expression> <block> ] "else" <block> ] |
                 "while" <paren_expression> <block> |
-                "for" "(" <declare_assign> ";" <expression> ";" <assignment> | <increment> | <decrement> ")" <block> |
+                "for" "(" <declare_assign> ";" <expression> ";" <assignment> | <increment> | <decrement> | <mul_assign> | <div_assign> | <mod_assign> ")" <block> |
                 "break" |
                 "continue" |
                 <block> |
@@ -12,6 +12,9 @@
                 <expression> ";" |
                 <increment> ";" |
                 <decrement> ";" |
+                <mul_assign> ";" |
+                <div_assign> ";" |
+                <mod_assign> ";" |
                 "print" <paren_expression> ";" |
                 "scan" "(" <identifier> ")"|
                 ";"
@@ -20,6 +23,9 @@
 <declaration> ::= <builtin_type> <identifier>
 <increment> ::= <identifier> "+=" <expression>
 <decrement> ::= <identifier> "-=" <expression>
+<mul_assign> ::= <identifier> "*=" <expression>
+<div_assign> ::= <identifier> "/=" <expression>
+<mod_assign> ::= <identifier> "%=" <expression>
 <paren_expression> ::= "(" <expression> ")"
 <expression> ::= <or_operand> [ "||" <or_operand> ]
 <or_operand> ::= <and_operand> [ "&&" <and_operand> ]

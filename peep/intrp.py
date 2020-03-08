@@ -189,6 +189,24 @@ class Interpreter(TreeWalker):
         val = ar[ident.value]
         ar.put(ident.value, val - dec.expr.accept(self))
     
+    def visit_mul_assign(self, mul_assign):
+        ident = mul_assign.ident
+        ar = self.stk.top()
+        val = ar[ident.value]
+        ar.put(ident.value, val * mul_assign.expr.accept(self))
+    
+    def visit_div_assign(self, div_assign):
+        ident = div_assign.ident
+        ar = self.stk.top()
+        val = ar[ident.value]
+        ar.put(ident.value, val / div_assign.expr.accept(self))
+    
+    def visit_mod_assign(self, mod_assign):
+        ident = mod_assign.ident
+        ar = self.stk.top()
+        val = ar[ident.value]
+        ar.put(ident.value, val % mod_assign.expr.accept(self))
+    
     def visit_if(self, if_):
         if if_.test.accept(self):
             self.stk.top().new_scope()

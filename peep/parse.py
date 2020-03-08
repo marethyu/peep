@@ -42,7 +42,7 @@ class Parser(object):
         """
         <statement> ::= "if" <paren_expression> <block> [ [ "else" "if" <paren_expression> <block> ] "else" <block> ] |
                         "while" <paren_expression> <block> |
-                        "for" "(" <declare_assign> ";" <expression> ";" <assignment> | <increment> | <decrement> ")" <block> |
+                        "for" "(" <declare_assign> ";" <expression> ";" <assignment> | <increment> | <decrement> | <mul_assign> | <div_assign> | <mod_assign> ")" <block> |
                         "break" |
                         "continue" |
                         <block> |
@@ -52,6 +52,9 @@ class Parser(object):
                         <expression> ";" |
                         <increment> ";" |
                         <decrement> ";" |
+                        <mul_assign> ";" |
+                        <div_assign> ";" |
+                        <mod_assign> ";" |
                         "print" <paren_expression> ";" |
                         "scan" "(" <identifier> ")"|
                         ";"
@@ -101,8 +104,14 @@ class Parser(object):
                 stmt = self._inc(ident)
             elif self.look.tag is Tag.MINUS_EQ:
                 stmt = self._dec(ident)
+            elif self.look.tag is Tag.MUL_EQ:
+                stmt = self._mul_eq(ident)
+            elif self.look.tag is Tag.DIV_EQ:
+                stmt = self._div_eq(ident)
+            elif self.look.tag is Tag.MOD_EQ:
+                stmt = self._mod_eq(ident)
             else:
-                raise_error(SyntaxError("Expected '=', '+=', '-=' but got {} instead!".format(self.look.tag), self.look.lineno))
+                raise_error(SyntaxError("Expected '=', '+=', '-=', '*=', '/=', '%=' but got {} instead!".format(self.look.tag), self.look.lineno))
             
             self._match(Tag.RPAREN)
             self.in_loop = True
@@ -143,8 +152,14 @@ class Parser(object):
                 node = self._inc(ident)
             elif self.look.tag is Tag.MINUS_EQ:
                 node = self._dec(ident)
+            elif self.look.tag is Tag.MUL_EQ:
+                node = self._mul_eq(ident)
+            elif self.look.tag is Tag.DIV_EQ:
+                node = self._div_eq(ident)
+            elif self.look.tag is Tag.MOD_EQ:
+                node = self._mod_eq(ident)
             else:
-                raise_error(SyntaxError("Expected '=', '+=', '-=' but got {} instead!".format(self.look.tag), self.look.lineno))
+                raise_error(SyntaxError("Expected '=', '+=', '-=', '*=', '/=', '%=' but got {} instead!".format(self.look.tag), self.look.lineno))
             
             self._match(Tag.SEMICOLON)
         elif self.look.tag is Tag.PRINT:
@@ -217,6 +232,21 @@ class Parser(object):
         """<decrement> ::= <identifier> "-=" <expression>"""
         self._match(Tag.MINUS_EQ)
         return Decrement(ident, self._expr())
+    
+    def _mul_eq(self, ident):
+        """<mul_assign> ::= <identifier> "*=" <expression>"""
+        self._match(Tag.MUL_EQ)
+        return MultiplicativeAssign(ident, self._expr())
+    
+    def _div_eq(self, ident):
+        """<div_assign> ::= <identifier> "/=" <expression>"""
+        self._match(Tag.DIV_EQ)
+        return DivisionAssign(ident, self._expr())
+    
+    def _mod_eq(self, ident):
+        """<mod_assign> ::= <identifier> "%=" <expression>"""
+        self._match(Tag.MOD_EQ)
+        return ModulusAssign(ident, self._expr())
     
     def _paren_expr(self):
         """<paren_expression> ::= "(" <expression> ")"""

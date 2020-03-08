@@ -137,6 +137,30 @@ class ASTPrinter(TreeWalker):
         self.indent -= self.ind_inc
         self._file_writeline('</Decrement>')
 
+    def visit_mul_assign(self, mul_assign):
+        self._file_writeline('<MultiplicativeAssign>')
+        self.indent += self.ind_inc
+        mul_assign.ident.accept(self)
+        mul_assign.expr.accept(self)
+        self.indent -= self.ind_inc
+        self._file_writeline('</MultiplicativeAssign>')
+
+    def visit_div_assign(self, div_assign):
+        self._file_writeline('<DivisionAssign>')
+        self.indent += self.ind_inc
+        div_assign.ident.accept(self)
+        div_assign.expr.accept(self)
+        self.indent -= self.ind_inc
+        self._file_writeline('</DivisionAssign>')
+
+    def visit_mod_assign(self, mod_assign):
+        self._file_writeline('<ModulusAssign>')
+        self.indent += self.ind_inc
+        mod_assign.ident.accept(self)
+        mod_assign.expr.accept(self)
+        self.indent -= self.ind_inc
+        self._file_writeline('</ModulusAssign>')
+
     def visit_if(self, if_):
         self._file_writeline('<If>')
         self.indent += self.ind_inc

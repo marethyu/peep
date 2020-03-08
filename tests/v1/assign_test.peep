@@ -1,0 +1,19 @@
+{
+    int a = 10;
+    int b = 5;
+    
+    a *= b;
+    print(a);
+    
+    a /= b;
+    print(b);
+    
+    a %= b;
+    print(a);
+    
+    b -= 1;
+    a += b;
+    b = a;
+    print(a);
+    print(b);
+}
