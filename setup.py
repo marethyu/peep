@@ -15,7 +15,7 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=["tests", "tests.*"]),
     entry_points = {
         "console_scripts" : [
-            "peep=peep.peep:main"
+            "peep=peep.__main__:main"
         ]
     },
     classifiers=[
