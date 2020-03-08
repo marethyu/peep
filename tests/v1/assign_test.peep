@@ -6,8 +6,10 @@
     print(a);
     
     a /= b;
-    print(b);
+    print(a);
     
+    a *= 2;
+    b += 1;
     a %= b;
     print(a);
     

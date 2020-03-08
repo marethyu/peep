@@ -199,7 +199,11 @@ class Interpreter(TreeWalker):
         ident = div_assign.ident
         ar = self.stk.top()
         val = ar[ident.value]
-        ar.put(ident.value, val / div_assign.expr.accept(self))
+        
+        if ident.type == Type.INT:
+            ar.put(ident.value, val // div_assign.expr.accept(self))
+        else: # Type.FLOAT
+            ar.put(ident.value, val / div_assign.expr.accept(self))
     
     def visit_mod_assign(self, mod_assign):
         ident = mod_assign.ident
