@@ -1,43 +1,9 @@
-import enum
-
 from abc import ABC, abstractmethod
 from err import TypeError, raise_error
 from type import Type
 
-class Kind(enum.Enum):
-    # Expressions
-    IDENT = 0
-    CONST = 1
-    OR_OP = 2
-    AND_OP = 3
-    EQ_OP = 4
-    REL_OP = 5
-    ADD_OP = 6
-    MUL_OP = 7
-    U_OP = 8
-    
-    # Statements
-    DECLARE = 9
-    ASSIGN = 10
-    INC = 11
-    DEC = 12
-    MUL_AS = 13
-    DIV_AS = 14
-    MOD_AS = 15
-    IF = 16
-    WHILE = 17
-    FOR = 18
-    BREAK = 19
-    CONT = 20
-    EXPR = 21 # this is actually a statement
-    PRINT = 22
-    SCAN = 23
-    BLOCK = 24 # a collection of statements
-    PRGM = 25 # an entire program
-
 class ASTNode(ABC):
-    def __init__(self, kind, value):
-        self.kind = kind
+    def __init__(self, value):
         self.value = value
         
         import lexer
@@ -49,7 +15,7 @@ class ASTNode(ABC):
 
 class Identifier(ASTNode):
     def __init__(self, type, name):
-        super().__init__(Kind.IDENT, name)
+        super().__init__(name)
         self.type = type
     
     def accept(self, tree_walker):
@@ -57,7 +23,7 @@ class Identifier(ASTNode):
 
 class Constant(ASTNode):
     def __init__(self, type, value):
-        super().__init__(Kind.CONST, value)
+        super().__init__(value)
         self.type = type
     
     def accept(self, tree_walker):
@@ -65,8 +31,8 @@ class Constant(ASTNode):
 
 # abstract
 class BinaryOp(ASTNode):
-    def __init__(self, kind, left, right, op):
-        super().__init__(kind, None)
+    def __init__(self, left, right, op):
+        super().__init__(None)
         self.left = left
         self.right = right
         self.op = op
@@ -82,49 +48,49 @@ class BinaryOp(ASTNode):
 
 class OrOperator(BinaryOp):
     def __init__(self, left, right):
-        super().__init__(Kind.OR_OP, left, right, '||')
+        super().__init__(left, right, '||')
     
     def accept(self, tree_walker):
         return tree_walker.visit_orop(self)
 
 class AndOperator(BinaryOp):
     def __init__(self, left, right):
-        super().__init__(Kind.AND_OP, left, right, '&&')
+        super().__init__(left, right, '&&')
     
     def accept(self, tree_walker):
         return tree_walker.visit_andop(self)
 
 class EqualityOp(BinaryOp):
     def __init__(self, left, right, op):
-        super().__init__(Kind.EQ_OP, left, right, op)
+        super().__init__(left, right, op)
     
     def accept(self, tree_walker):
         return tree_walker.visit_eqop(self)
 
 class RelationalOp(BinaryOp):
     def __init__(self, left, right, op):
-        super().__init__(Kind.REL_OP, left, right, op)
+        super().__init__(left, right, op)
     
     def accept(self, tree_walker):
         return tree_walker.visit_relop(self)
 
 class AddictiveOp(BinaryOp):
     def __init__(self, left, right, op):
-        super().__init__(Kind.ADD_OP, left, right, op)
+        super().__init__(left, right, op)
     
     def accept(self, tree_walker):
         return tree_walker.visit_addop(self)
 
 class MultiplicativeOp(BinaryOp):
     def __init__(self, left, right, op):
-        super().__init__(Kind.MUL_OP, left, right, op)
+        super().__init__(left, right, op)
     
     def accept(self, tree_walker):
         return tree_walker.visit_mulop(self)
 
 class UnaryOp(ASTNode):
     def __init__(self, op, operand):
-        super().__init__(Kind.U_OP, None)
+        super().__init__(None)
         self.op = op
         self.operand = operand
         
@@ -137,7 +103,7 @@ class UnaryOp(ASTNode):
 
 class Declaration(ASTNode):
     def __init__(self, ident):
-        super().__init__(Kind.DECLARE, None)
+        super().__init__(None)
         self.ident = ident
         self.type = self.ident.type
     
@@ -146,7 +112,7 @@ class Declaration(ASTNode):
 
 class Assign(ASTNode):
     def __init__(self, ident, expr):
-        super().__init__(Kind.ASSIGN, None)
+        super().__init__(None)
         self.ident = ident
         self.expr = expr
         
@@ -158,7 +124,7 @@ class Assign(ASTNode):
 
 class Increment(ASTNode):
     def __init__(self, ident, expr):
-        super().__init__(Kind.INC, None)
+        super().__init__(None)
         self.ident = ident
         self.expr = expr
         
@@ -172,7 +138,7 @@ class Increment(ASTNode):
 
 class Decrement(ASTNode):
     def __init__(self, ident, expr):
-        super().__init__(Kind.DEC, None)
+        super().__init__(None)
         self.ident = ident
         self.expr = expr
         
@@ -186,7 +152,7 @@ class Decrement(ASTNode):
 
 class MultiplicativeAssign(ASTNode):
     def __init__(self, ident, expr):
-        super().__init__(Kind.MUL_AS, None)
+        super().__init__(None)
         self.ident = ident
         self.expr = expr
         
@@ -200,7 +166,7 @@ class MultiplicativeAssign(ASTNode):
 
 class DivisionAssign(ASTNode):
     def __init__(self, ident, expr):
-        super().__init__(Kind.DIV_AS, None)
+        super().__init__(None)
         self.ident = ident
         self.expr = expr
         
@@ -214,7 +180,7 @@ class DivisionAssign(ASTNode):
 
 class ModulusAssign(ASTNode):
     def __init__(self, ident, expr):
-        super().__init__(Kind.MOD_AS, None)
+        super().__init__(None)
         self.ident = ident
         self.expr = expr
         
@@ -228,7 +194,7 @@ class ModulusAssign(ASTNode):
 
 class If(ASTNode):
     def __init__(self, test, block, brs):
-        super().__init__(Kind.IF, None)
+        super().__init__(None)
         self.test = test
         self.block = block
         # empty for simple if stmt, contains a element (else branch) for if-else stmt,
@@ -243,7 +209,7 @@ class If(ASTNode):
 
 class While(ASTNode):
     def __init__(self, test, block):
-        super().__init__(Kind.WHILE, None)
+        super().__init__(None)
         self.test = test
         self.block = block
         
@@ -255,7 +221,7 @@ class While(ASTNode):
 
 class For(ASTNode):
     def __init__(self, init, test, stmt, block):
-        super().__init__(Kind.FOR, None)
+        super().__init__(None)
         self.init = init
         self.test = test
         self.stmt = stmt
@@ -269,21 +235,21 @@ class For(ASTNode):
 
 class Break(ASTNode):
     def __init__(self):
-        super().__init__(Kind.BREAK, None)
+        super().__init__(None)
     
     def accept(self, tree_walker):
         return tree_walker.visit_break(self)
 
 class Continue(ASTNode):
     def __init__(self):
-        super().__init__(Kind.CONT, None)
+        super().__init__(None)
     
     def accept(self, tree_walker):
         return tree_walker.visit_cont(self)
 
 class Expression(ASTNode):
     def __init__(self, expr):
-        super().__init__(Kind.EXPR, None)
+        super().__init__(None)
         self.expr = expr
     
     def accept(self, tree_walker):
@@ -291,7 +257,7 @@ class Expression(ASTNode):
 
 class Print(ASTNode):
     def __init__(self, arg):
-        super().__init__(Kind.PRINT, None)
+        super().__init__(None)
         self.arg = arg
     
     def accept(self, tree_walker):
@@ -299,7 +265,7 @@ class Print(ASTNode):
 
 class Scan(ASTNode):
     def __init__(self, ident):
-        super().__init__(Kind.SCAN, None)
+        super().__init__(None)
         self.ident = ident
     
     def accept(self, tree_walker):
@@ -307,7 +273,7 @@ class Scan(ASTNode):
 
 class Block(ASTNode):
     def __init__(self, prev_blk, stmt):
-        super().__init__(Kind.BLOCK, None)
+        super().__init__(None)
         self.prev_blk = prev_blk
         self.stmt = stmt
     
@@ -316,7 +282,7 @@ class Block(ASTNode):
 
 class Program(ASTNode):
     def __init__(self, block):
-        super().__init__(Kind.PRGM, None)
+        super().__init__(None)
         self.block = block
     
     def accept(self, tree_walker):
