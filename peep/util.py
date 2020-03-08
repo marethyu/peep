@@ -6,6 +6,8 @@ import sys
 filename = None
 
 def get_file(file):
+    fh = None
+    
     try:
         global filename
         filename = file[:-5]

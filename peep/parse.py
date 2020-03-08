@@ -1,8 +1,8 @@
-from ast import *
-from err import DuplicateIdentError, UndeclaredIdentError, SyntaxError, raise_error
-from scope import Scope
-from token import TokenTag as Tag
-from type import Type
+from peep import *
+from peep import DuplicateIdentError, UndeclaredIdentError, SyntaxError, raise_error
+from peep import Scope
+from peep import TokenTag as Tag
+from peep import Type
 
 class Parser(object):
     def __init__(self, lexer):

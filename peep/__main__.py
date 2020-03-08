@@ -1,22 +1,23 @@
 import argparse
 import sys
 
-from lexer import Lexer
-from parse import Parser
-from astprinter import ASTPrinter
-from intrp import Interpreter
+from peep import Lexer
+from peep import Parser
+from peep import ASTPrinter
+from peep import Interpreter
 
 peep_ver = "1.1.2"
 
-def p_ast(file):
-    root = Parser(Lexer(file)).parse()
+def p_ast(lexer):
+    root = Parser(lexer).parse()
     astprinter = ASTPrinter(root)
     astprinter.print_ast()
-    import util
-    astprinter.write(util.filename)
+    from peep.util import filename
+    assert filename is not None
+    astprinter.write(filename)
 
-def i(file):
-    root = Parser(Lexer(file)).parse()
+def i(lexer):
+    root = Parser(lexer).parse()
     interpreter = Interpreter(root)
     interpreter.interpret()
 
@@ -37,17 +38,18 @@ def main():
     
     args = parser.parse_args()
     
-    from util import get_file
-    fh = get_file(args.file)
     if args.version:
         version()
     
+    try:
+        lexer = Lexer(args.file)
+    except LexError as le:
+        return
+    
     if args.print_ast:
-        p_ast(fh)
-        fh.close()
+        p_ast(lexer)
     elif args.i:
-        i(fh)
-        fh.close()
+        i(lexer)
 
 if __name__ == '__main__':
     main()

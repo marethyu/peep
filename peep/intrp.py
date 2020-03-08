@@ -1,8 +1,8 @@
-from ast import Block, Declaration
-from err import DivisionByZeroError, InputCastingError, raise_runtime_error
-from scope import Scope
-from treewalker import TreeWalker
-from type import Type
+from peep import Block, Declaration
+from peep import DivisionByZeroError, InputCastingError, raise_runtime_error
+from peep import Scope
+from peep import TreeWalker
+from peep import Type
 
 class ChainedList:
     def __init__(self, prev):
@@ -166,7 +166,7 @@ class Interpreter(TreeWalker):
     
     def visit_decl(self, decl):
         ar = self.stk.top()
-        from defaultvals import Default
+        from peep import Default
         ar.put(decl.ident.value, Default.default_value(decl.ident.type), True)
         return decl.ident
     
@@ -331,7 +331,7 @@ class Interpreter(TreeWalker):
             blk.stmt.accept(self)
     
     def visit_prgm(self, prgm):
-        import util
+        from peep import util
         filename = util.filename
         if filename.find('/') != -1:
             filename = filename[filename.rfind('/') + 1:] # remove directory prefix

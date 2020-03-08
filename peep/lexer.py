@@ -1,13 +1,18 @@
-from err import LexError, raise_error
-from token import TokenTag, Token
+from peep import LexError, raise_error
+from peep import TokenTag, Token
+from peep.util import get_file
 
 # global variable
 lineno = 1
 
 
 class Lexer:
-    def __init__(self, file):
-        self.prgm = file.read()
+    def __init__(self, filename):
+        fh = get_file(filename)
+        if fh is None:
+            raise LexError("fh is None")
+
+        self.prgm = fh.read()
         self.prgm_len = len(self.prgm)
 
         if self.prgm_len == 0:

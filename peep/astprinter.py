@@ -1,4 +1,4 @@
-from treewalker import TreeWalker
+from peep import TreeWalker
 
 
 class FileBuffer:

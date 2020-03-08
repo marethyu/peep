@@ -10,7 +10,7 @@ def run(file):
     
     with patch("sys.argv", ["", "-i", file]), patch("sys.exit", exit):
         try:
-            from peep.peep import main
+            from peep.__main__ import main
             main()
         except:
             return

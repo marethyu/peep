@@ -1,4 +1,4 @@
-from type import Type
+from peep import Type
 
 DEFAULT_VALUES = {
     Type.INT: 0,

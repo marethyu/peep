@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
-from err import TypeError, raise_error
-from type import Type
+from peep import TypeError, raise_error
+from peep import Type
 
 class ASTNode(ABC):
     def __init__(self, value):
         self.value = value
         
-        import lexer
+        from peep import lexer
         self.lineno = lexer.lineno
     
     @abstractmethod
