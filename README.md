@@ -7,7 +7,7 @@
 
 Peep is a toy programming language with small practical applications. This project helps me to learn more about complier and interpreter design and implementation. Peep's syntax is mostly based off C, with some minor modifications.
 
-This repository consists of a complete compiler frontend (lexical analyzer, syntax analyzer, and semantic analyzer) and a working interpreter.
+This repository consists of a complete compiler frontend (lexical analyzer, syntax analyzer, and semantic analyzer) and a working tree-walk interpreter.
 
 ## Getting Started (for Windows users)
 
@@ -122,10 +122,12 @@ Program to calculate lowest commom multiple of two numbers
 
 ## Changes
 
+- 03/7/2020: For technical reasons, do-while loop is removed from the language's grammar
 - 02/08/2020: Organized files; Packaged this repository to PyPI
 
 ## Things to Add for Next Version (not necessary in order)
 - Ternary operator
+- Multiple assignment
 - Global variables
 - Command line arguments
 - Option to customize IO
