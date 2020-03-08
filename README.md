@@ -22,9 +22,19 @@ Then type ```peep```, have fun!
 
 ## Basic Usage
 
-To run the Peep program, save the code in a file with .peep extension and then type the following command in the prompt (replace ____ with your file name):
+To run a Peep program, save the code in a file with .peep extension and then type the following command in the prompt (replace ____ with your file name):
 ```markdown
 peep -i ____.peep
+```
+
+Run with Python script:
+
+run.py
+```
+from peep import Lexer, Parser, Interpreter
+
+if __name__ == "__main__":
+    Interpreter(Parser(Lexer("____.peep")).parse()).interpret()
 ```
 
 To view the Peep program's abstract syntax tree (AST), run the following command:
