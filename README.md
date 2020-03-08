@@ -15,7 +15,7 @@ This project is built with Python 3.6.0 so make sure you have [Python](https://w
 
 After you satisfy the Python requirement, open a command prompt and type the following command to install Peep:
 ```markdown
-pip install thepeep
+pip install git+https://github.com/Marethyu12/Peep.git
 ```
 
 Then type ```peep```, have fun!
