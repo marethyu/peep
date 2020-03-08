@@ -87,10 +87,16 @@ class Interpreter(TreeWalker):
             return const.value
     
     def visit_orop(self, orop):
-        return orop.left.accept(self) or orop.right.accept(self)
+        left = orop.left.accept(self)
+        if left:
+            return True
+        return orop.right.accept(self)
     
     def visit_andop(self, andop):
-        return andop.left.accept(self) and andop.right.accept(self)
+        left = andop.left.accept(self)
+        if not left:
+            return False
+        return andop.right.accept(self)
     
     def visit_eqop(self, eqop):
         op = eqop.op
