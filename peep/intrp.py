@@ -94,6 +94,16 @@ class Interpreter(TreeWalker):
     
     def visit_eqop(self, eqop):
         op = eqop.op
+        type = eqop.left.type
+        
+        if type == Type.FLOAT: # built-in float comparison
+            left = eqop.left.accept(self)
+            right = eqop.right.accept(self)
+            
+            import math, sys
+            if op == "==":
+                return math.fabs(left - right) < sys.float_info.epsilon # check left and right are equal
+            return math.fabs(left - right) > sys.float_info.epsilon
         
         if op == "==":
             return eqop.left.accept(self) == eqop.right.accept(self)
@@ -136,7 +146,7 @@ class Interpreter(TreeWalker):
                 return mulop.left.accept(self) // right
             
             right = mulop.right.accept(self)
-            import sys, math
+            import math, sys
             if math.fabs(right - 0.0) < sys.float_info.epsilon: # right == 0.0
                 self.stk.top().last_lineno = mulop.right.lineno
                 raise_runtime_error(DivisionByZeroError(mulop.right.lineno), self.stk)
